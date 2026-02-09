@@ -248,10 +248,10 @@ def collate_crossdocked(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
 class CrossDockedDataModule(pl.LightningDataModule):
     def __init__(
         self,
-        lmdb_path: str,
-        split_pt_path: str,
+        lmdb_path: str = "data/crossdocked_v1.1_rmsd1.0_pocket10_processed_final.lmdb",
+        split_pt_path: str = "data/crossdocked_pose_split_from_name_val1000.pt",
         batch_size: int = 16,
-        num_workers: int = 4,
+        num_workers: int = 2,
         pin_memory: bool = True,
         persistent_workers: bool = True,
         center: str = "protein_mean",
