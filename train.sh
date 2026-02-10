@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=30gb
-#SBATCH --account=raquel.dias
+#SBATCH --account=yanjun.li
 #SBATCH --time=36:00:00
 #SBATCH --partition=hpg-b200
 #SBATCH --gpus=1
