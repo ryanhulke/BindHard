@@ -5,11 +5,6 @@ from torch_geometric.nn import knn_graph, radius_graph
 
 from model.common import GaussianSmearing, MLP
 
-def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim_size: int) -> torch.Tensor:
-    out = torch.zeros((dim_size, src.shape[-1]), device=src.device, dtype=src.dtype)
-    out.index_add_(0, index, src)
-    return out
-
 
 class EGNNLayer(nn.Module):
     def __init__(
@@ -29,8 +24,8 @@ class EGNNLayer(nn.Module):
         self.cutoff = float(cutoff)
         self.update_x = bool(update_x)
 
-        radial_dim = self.num_r_gaussian if self.num_r_gaussian > 1 else 1
         self.rbf = GaussianSmearing(start=0.0, stop=self.cutoff, num_gaussians=self.num_r_gaussian) if self.num_r_gaussian > 1 else None
+        radial_dim = int(self.rbf.offset.numel()) if self.rbf is not None else 1
 
         self.edge_mlp = MLP(
             in_dim=2 * self.hidden_dim + self.edge_feat_dim + radial_dim,
@@ -69,9 +64,13 @@ class EGNNLayer(nn.Module):
         mask_ligand: torch.Tensor,
         edge_attr: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        src, dst = edge_index[0], edge_index[1]
-        rel = x[dst] - x[src]
+        src_idx, dst_idx = edge_index[0], edge_index[1]
+
+        # relative position and distance between the source and destination nodes of each edge
+        rel = x[dst_idx] - x[src_idx]
         d2 = (rel * rel).sum(dim=-1, keepdim=True)
+
+
         if self.rbf is not None:
             r = torch.sqrt(d2 + 1e-8)
             d_feat = self.rbf(r)
@@ -83,18 +82,29 @@ class EGNNLayer(nn.Module):
         else:
             e_feat = torch.cat([d_feat, edge_attr], dim=-1)
 
-        m_in = torch.cat([h[dst], h[src], e_feat], dim=-1)
+        m_in = torch.cat([h[dst_idx], h[src_idx], e_feat], dim=-1)
+
+        # message from source node to destination node on each edge
         m = self.edge_mlp(m_in)
+
+        # learned edge gate to control how much message from each edge should be passed to the node update
         g = self.edge_gate(m)
-        agg = scatter_sum(m * g, dst, h.shape[0])
+        msg = m * g
+
+        # aggregate the messages from neighboring nodes for each destination node
+        # into a single msg vector of size hidden_dim, in a tensor of shape (num_nodes, hidden_dim)
+        agg = torch.zeros((h.shape[0], msg.shape[-1]), device=msg.device, dtype=msg.dtype)
+        agg.index_add_(0, dst_idx, msg) #
         h = h + self.node_mlp(torch.cat([agg, h], dim=-1))
 
         if self.update_x:
             rnorm = torch.sqrt(d2 + 1e-8)
             coef = self.x_mlp(m)
-            dx = scatter_sum(rel / (rnorm + 1.0) * coef, dst, x.shape[0])
-            x = x + dx * mask_ligand.to(x.dtype).unsqueeze(-1)
+            vec = rel / (rnorm + 1.0) * coef
 
+            dx = torch.zeros((x.shape[0], x.shape[-1]), device=x.device, dtype=x.dtype)
+            dx.index_add_(0, dst_idx, vec.to(dtype=x.dtype))
+            x = x + dx * mask_ligand.to(x.dtype).unsqueeze(-1)
         return h, x
 
 
@@ -137,6 +147,7 @@ class EGNN(nn.Module):
             ]
         )
 
+    # build the edge list in the graph
     def connect_edges(self, x: torch.Tensor, mask_ligand: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
         if self.cutoff_mode == "knn":
             return knn_graph(x, k=self.k, batch=batch, flow="source_to_target")
@@ -144,6 +155,7 @@ class EGNN(nn.Module):
             return radius_graph(x, r=self.cutoff, batch=batch, flow="source_to_target")
         raise ValueError(f"cutoff_mode must be one of: knn, radius. got {self.cutoff_mode!r}")
 
+    # onehot feature indicating whether the edge connects two ligand atoms, two protein atoms, or a ligand and a protein atom
     def build_edge_type(self, edge_index: torch.Tensor, mask_ligand: torch.Tensor) -> torch.Tensor:
         src, dst = edge_index[0], edge_index[1]
         ms = mask_ligand[src].bool()

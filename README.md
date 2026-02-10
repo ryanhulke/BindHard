@@ -7,3 +7,17 @@
 
 
 - Note: current dataset is filtered to very strong binders. This is good for the main task of generating strong binders, but not necessarily for the potential downstream task of predicting binding affinity.
+
+### Model
+- differences: 
+  - TargetDiff's best model uses **Graph Attention** message passing compared to our MLP message passing
+  - they have 9 layers, we have 6
+  - their embed dim 128 ours 256
+
+
+### TO-DO:
+- evaluation metrics
+  - RMSE (in Angstroms) against test set, sampled, but with known atom count & types?
+  - look to the TargetDiff paper & similar papers for metrics
+- build & test graph attention architecture
+- 3D visualization tool of molecule being generated in protein pocket and diffusion of atom locations

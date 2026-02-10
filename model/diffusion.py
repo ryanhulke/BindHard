@@ -19,17 +19,13 @@ def center_by_protein(
     return protein_pos - mean_p[protein_batch], ligand_pos - mean_p[ligand_batch]
 
 
-#  the noise schedule for the Position is defined as a sigmoid function,
-#  which starts with a very small noise and gradually increases to a larger noise.
+#  noise schedule for the Position
 def sigmoid_beta_schedule(steps: int, beta1: float, betaT: float) -> torch.Tensor:
     x = torch.linspace(-6, 6, steps, dtype=torch.float64)
     sig = 1.0 / (torch.exp(-x) + 1.0)
     return (sig * (betaT - beta1) + beta1).to(torch.float32)
 
-#  the noise schedule for the atom type is defined as a cosine function, 
-# which starts with a large noise and gradually decreases to a smaller noise. 
-# this design allows the model to first learn to predict the atom types when the noise is large, 
-# and then learn to predict the atom positions when the noise is small.
+#  noise schedule for the atom type
 def cosine_alpha_sqrt_schedule(steps: int, s: float) -> torch.Tensor:
     x = torch.linspace(0, steps, steps + 1, dtype=torch.float64)
     ac = torch.cos(((x / steps) + s) / (1.0 + s) * (math.pi / 2.0)) ** 2
@@ -37,11 +33,7 @@ def cosine_alpha_sqrt_schedule(steps: int, s: float) -> torch.Tensor:
     a = (ac[1:] / ac[:-1]).clamp(0.001, 1.0)
     return torch.sqrt(a).to(torch.float32)
 
-
-def onehot(idx: torch.Tensor, k: int) -> torch.Tensor:
-    return F.one_hot(idx, k).to(torch.float32)
-
-
+# sample atom types
 def sample_categorical(probs: torch.Tensor) -> torch.Tensor:
     eps = 1e-20
     u = torch.rand_like(probs).clamp_(eps, 1.0 - eps)
@@ -57,6 +49,20 @@ class AtomCountPrior:
     values: Tuple[torch.Tensor, ...] # list of unique atom counts in each pocket size bin
     probs: Tuple[torch.Tensor, ...] # list of probabilities corresponding to the unique atom counts in each pocket size bin
 
+    def state_dict(self) -> dict:
+        return {
+            "edges": self.edges.detach().cpu(),
+            "values": [v.detach().cpu() for v in self.values],
+            "probs": [p.detach().cpu() for p in self.probs],
+        }
+
+    @staticmethod
+    def from_state_dict(d: dict) -> "AtomCountPrior":
+        return AtomCountPrior(
+            edges=d["edges"],
+            values=tuple(d["values"]),
+            probs=tuple(d["probs"]),
+        )
     # pocket size defined as median of the top-10 farthest pairwise distances between protein pocket atoms.
     @staticmethod
     def pocket_size(protein_pos: torch.Tensor) -> float:
@@ -171,7 +177,7 @@ class LigandDiffusion(torch.nn.Module):
     # v, the atom type, is represented as one-hot, so we can directly sample from the categorical distribution
     def q_sample_v(self, v0_idx: torch.Tensor, t_atom: torch.Tensor) -> torch.Tensor:
         abar = self.abar_v[t_atom].unsqueeze(-1)
-        probs = abar * onehot(v0_idx, self.k) + (1.0 - abar) / self.k
+        probs = abar * F.one_hot(v0_idx, self.k).to(torch.float32) + (1.0 - abar) / self.k
         return sample_categorical(probs)
 
     def posterior_x(self, xt: torch.Tensor, x0_hat: torch.Tensor, t_atom: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -188,7 +194,7 @@ class LigandDiffusion(torch.nn.Module):
     def posterior_v(self, vt_idx: torch.Tensor, v0_probs: torch.Tensor, t_atom: torch.Tensor) -> torch.Tensor:
         alpha = self.alpha_v[t_atom].unsqueeze(-1)
         abar_prev = self.abar_v[(t_atom - 1).clamp_min(0)].unsqueeze(-1)
-        like = alpha * onehot(vt_idx, self.k) + (1.0 - alpha) / self.k
+        like = alpha * F.one_hot(vt_idx, self.k).to(torch.float32) + (1.0 - alpha) / self.k
         prior = abar_prev * v0_probs + (1.0 - abar_prev) / self.k
         p = like * prior
         return p / p.sum(dim=-1, keepdim=True).clamp_min(1e-20)
@@ -208,11 +214,17 @@ class LigandDiffusion(torch.nn.Module):
         aa = batch["protein_atom_to_aa_type"].long().clamp(0, self.protein_aa_vocab - 1)
         bb = batch["protein_is_backbone"].long().clamp(0, 1)
 
+        # protein atoms' hidden feature vectors
+        # sum of the embeddings of element type, amino acid type, and whether it's a backbone atom
         h_protein = self.prot_elem(pe) + self.prot_aa(aa) + self.prot_bb(bb)
 
         t_atom = t_graph[ligand_batch].clamp(0, self.t - 1)
+
+        # ligand atoms' hidden feature vectors, sum of the embedding of the atom type and the time step
         h_ligand = self.lig_type(ligand_type_t.long()) + self.time(t_atom)
 
+
+        # combine the protein and ligand features and positions into a single context for the EGNN denoiser
         h_ctx, x_ctx, batch_ctx, mask_ligand = compose_context(
             h_protein=h_protein,
             h_ligand=h_ligand,
@@ -222,40 +234,11 @@ class LigandDiffusion(torch.nn.Module):
             batch_ligand=ligand_batch,
         )
 
+        # predict the original atom positions and types from the noisy input
         out = self.denoiser(h_ctx, x_ctx, mask_ligand, batch_ctx, return_all=False)
         x0_hat = out["x"][mask_ligand]
         v0_logits = self.v_head(out["h"][mask_ligand])
         return x0_hat, v0_logits
-
-    # combine the regression loss for position and the scaled KL divergence for type prediction
-    def loss(self, batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
-        device = batch["protein_pos"].device
-        protein_pos = batch["protein_pos"].float()
-        ligand_pos = batch["ligand_pos"].float()
-        protein_batch = batch["protein_batch"].long()
-        ligand_batch = batch["ligand_batch"].long()
-        bsz = int(protein_batch.max().item()) + 1
-
-        protein_pos = protein_pos + self.protein_noise_std * torch.randn_like(protein_pos)
-        protein_pos, ligand_pos = center_by_protein(protein_pos, ligand_pos, protein_batch, ligand_batch, bsz)
-
-        t_graph = torch.randint(0, self.t, (bsz,), device=device, dtype=torch.long)
-        t_atom = (t_graph + 1)[ligand_batch]
-
-        v0_idx = batch["ligand_type"].long()
-        xt, _ = self.q_sample_x(ligand_pos, t_atom)
-        vt_idx = self.q_sample_v(v0_idx, t_atom)
-
-        x0_hat, v0_logits = self.predict_x0_v0(batch, protein_pos, xt, vt_idx, t_graph)
-        v0_probs_hat = torch.softmax(v0_logits.float(), dim=-1)
-
-        p_true = self.posterior_v(vt_idx, onehot(v0_idx, self.k), t_atom)
-        p_pred = self.posterior_v(vt_idx, v0_probs_hat, t_atom)
-        eps = 1e-20
-        loss_type = (p_true * ((p_true + eps).log() - (p_pred + eps).log())).sum(dim=-1).mean()
-        loss_pos = (ligand_pos - x0_hat.float()).pow(2).sum(dim=-1).mean()
-        loss = loss_pos + self.type_loss_scale * loss_type
-        return {"loss": loss, "loss_pos": loss_pos, "loss_type": loss_type}
 
     # the sampling process starts from pure noise and iteratively denoises it using the learned model
     @torch.no_grad()
@@ -270,7 +253,6 @@ class LigandDiffusion(torch.nn.Module):
             counts.append(prior.sample(protein_pos[protein_batch == b], device))
         counts_t = torch.tensor(counts, device=device, dtype=torch.long)
 
-        protein_pos = protein_pos + self.protein_noise_std * torch.randn_like(protein_pos)
         ligand_batch = torch.repeat_interleave(torch.arange(bsz, device=device), counts_t)
         n_lig = int(ligand_batch.numel())
 
@@ -302,3 +284,33 @@ class LigandDiffusion(torch.nn.Module):
             "protein_pos": protein_pos,
             "protein_batch": protein_batch,
         }
+
+    # combine the regression loss for position and the scaled KL divergence for type prediction
+    def loss(self, batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        device = batch["protein_pos"].device
+        protein_pos = batch["protein_pos"].float()
+        ligand_pos = batch["ligand_pos"].float()
+        protein_batch = batch["protein_batch"].long()
+        ligand_batch = batch["ligand_batch"].long()
+        bsz = int(protein_batch.max().item()) + 1
+
+        protein_pos = protein_pos + self.protein_noise_std * torch.randn_like(protein_pos)
+        protein_pos, ligand_pos = center_by_protein(protein_pos, ligand_pos, protein_batch, ligand_batch, bsz)
+
+        t_graph = torch.randint(0, self.t, (bsz,), device=device, dtype=torch.long)
+        t_atom = (t_graph + 1)[ligand_batch]
+
+        v0_idx = batch["ligand_type"].long()
+        xt, _ = self.q_sample_x(ligand_pos, t_atom)
+        vt_idx = self.q_sample_v(v0_idx, t_atom)
+
+        x0_hat, v0_logits = self.predict_x0_v0(batch, protein_pos, xt, vt_idx, t_graph)
+        v0_probs_hat = torch.softmax(v0_logits.float(), dim=-1)
+
+        p_true = self.posterior_v(vt_idx, F.one_hot(v0_idx, self.k).to(torch.float32), t_atom)
+        p_pred = self.posterior_v(vt_idx, v0_probs_hat, t_atom)
+        eps = 1e-20
+        loss_type_scaled = (p_true * ((p_true + eps).log() - (p_pred + eps).log())).sum(dim=-1).mean() * self.type_loss_scale
+        loss_pos = (ligand_pos - x0_hat.float()).pow(2).sum(dim=-1).mean()
+        loss = loss_pos + loss_type_scaled
+        return {"loss": loss, "loss_position": loss_pos, "loss_atom_type": loss_type_scaled}

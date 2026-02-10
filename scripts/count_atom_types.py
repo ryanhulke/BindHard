@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])) # so we can import datamodules from inside scripts/
 from datamodules import CrossDockedDataModule
 
 lmdb_path = os.path.abspath("data/crossdocked_v1.1_rmsd1.0_pocket10_processed_final.lmdb")
@@ -43,7 +43,7 @@ def count_atom_types():
         lmdb_path=lmdb_path,
         split_pt_path=split_path,
         batch_size=8,
-        num_workers=2,
+        num_workers=0,
     )
     dm.setup()
 

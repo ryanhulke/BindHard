@@ -24,7 +24,6 @@ class GaussianSmearing(nn.Module):
 
 class MLP(nn.Module):
     """MLP with the same hidden dim across all layers."""
-
     def __init__(self, in_dim, out_dim, hidden_dim, num_layer=2, norm=True, act_fn='relu', act_last=False):
         super().__init__()
         layers = []
@@ -46,11 +45,7 @@ class MLP(nn.Module):
     
 
 def compose_context(h_protein, h_ligand, pos_protein, pos_ligand, batch_protein, batch_ligand):
-    # previous version has problems when ligand atom types are fixed
-    # (due to sorting randomly in case of same element)
-
     batch_ctx = torch.cat([batch_protein, batch_ligand], dim=0)
-    # sort_idx = batch_ctx.argsort()
     sort_idx = torch.sort(batch_ctx, stable=True).indices
 
     mask_ligand = torch.cat([

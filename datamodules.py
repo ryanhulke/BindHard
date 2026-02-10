@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Sequence
 import pickle
 import torch
 from torch.utils.data import Dataset, DataLoader, get_worker_info
 import lmdb
-import lightning.pytorch as pl
 
 
 def map_elements(z: torch.Tensor, element_map: Dict[int, int], unknown_index: int) -> torch.Tensor:
@@ -13,27 +11,6 @@ def map_elements(z: torch.Tensor, element_map: Dict[int, int], unknown_index: in
     for i in range(z_cpu.numel()):
         out[i] = element_map.get(int(z_cpu[i].item()), unknown_index)
     return out.to(device=z.device)
-
-
-@dataclass
-class CrossDockedExample:
-    protein_pos: torch.Tensor
-    protein_element: torch.Tensor
-    protein_is_backbone: torch.Tensor
-    protein_atom_to_aa_type: torch.Tensor
-
-    ligand_pos: torch.Tensor
-    ligand_element: torch.Tensor
-    ligand_bond_index: torch.Tensor
-    ligand_bond_type: torch.Tensor
-
-    ligand_atom_feature: Optional[torch.Tensor] = None
-    ligand_center_of_mass: Optional[torch.Tensor] = None
-
-    protein_molecule_name: Optional[str] = None
-    ligand_smiles: Optional[str] = None
-    protein_filename: Optional[str] = None
-    ligand_filename: Optional[str] = None
 
 
 class CrossDockedLMDBDataset(Dataset):
@@ -245,15 +222,16 @@ def collate_crossdocked(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
     return out
 
 
-class CrossDockedDataModule(pl.LightningDataModule):
+class CrossDockedDataModule:
     def __init__(
         self,
         lmdb_path: str = "data/crossdocked_v1.1_rmsd1.0_pocket10_processed_final.lmdb",
         split_pt_path: str = "data/crossdocked_pose_split_from_name_val1000.pt",
         batch_size: int = 16,
-        num_workers: int = 2,
-        pin_memory: bool = True,
-        persistent_workers: bool = True,
+        num_workers: int = 0,
+        pin_memory: bool = False,
+        persistent_workers: bool = False,
+        prefetch_factor: int = None,
         center: str = "protein_mean",
         ligand_elements: Sequence[int] = (6, 7, 8, 9, 15, 16, 17, 35, 53),
         include_unknown_ligand_type: bool = True,
@@ -266,17 +244,12 @@ class CrossDockedDataModule(pl.LightningDataModule):
         self.num_workers = int(num_workers)
         self.pin_memory = bool(pin_memory)
         self.persistent_workers = bool(persistent_workers)
+        self.prefetch_factor = prefetch_factor if self.num_workers > 0 else None
         self.center = center
         self.ligand_elements = tuple(int(x) for x in ligand_elements)
         self.include_unknown_ligand_type = bool(include_unknown_ligand_type)
         self.return_text_fields = bool(return_text_fields)
         self.drop_last = bool(drop_last)
-
-        self.ds_train = None
-        self.ds_val = None
-        self.ds_test = None
-
-    def setup(self, stage: Optional[str] = None) -> None:
         self.ds_train = CrossDockedLMDBDataset(
             lmdb_path=self.lmdb_path,
             split_pt_path=self.split_pt_path,
@@ -313,6 +286,7 @@ class CrossDockedDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
             persistent_workers=(self.persistent_workers and self.num_workers > 0),
+            prefetch_factor=self.prefetch_factor,
             drop_last=self.drop_last,
             collate_fn=collate_crossdocked,
         )
@@ -325,6 +299,7 @@ class CrossDockedDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
             persistent_workers=(self.persistent_workers and self.num_workers > 0),
+            prefetch_factor=self.prefetch_factor,
             drop_last=False,
             collate_fn=collate_crossdocked,
         )
@@ -337,6 +312,7 @@ class CrossDockedDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
             persistent_workers=(self.persistent_workers and self.num_workers > 0),
+            prefetch_factor=self.prefetch_factor,
             drop_last=False,
             collate_fn=collate_crossdocked,
         )
