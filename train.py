@@ -10,13 +10,6 @@ from model.diffusion import LigandDiffusion
 from model.egnn import EGNN
 
 
-def move_to_device(batch: dict, device: torch.device) -> dict:
-    out = {}
-    for k, v in batch.items():
-        out[k] = v.to(device, non_blocking=True) if torch.is_tensor(v) else v
-    return out
-
-
 @torch.no_grad()
 def eval_epoch(diffusion: LigandDiffusion, loader, device: torch.device) -> dict:
     diffusion.eval()
