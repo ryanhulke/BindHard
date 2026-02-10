@@ -52,7 +52,6 @@ nvidia-nccl-cu12==2.27.3
 nvidia-nvjitlink-cu12==12.8.93
 nvidia-nvshmem-cu12==3.3.20
 nvidia-nvtx-cu12==12.8.90
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1769093650/work
 pandas==2.3.3
 parso==0.8.5
 pexpect==4.9.0
