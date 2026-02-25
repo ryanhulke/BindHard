@@ -143,10 +143,18 @@ class LigandDiffusion(torch.nn.Module):
         self.protein_aa_vocab = int(protein_aa_vocab)
 
         self.prot_elem = torch.nn.Embedding(self.protein_elem_vocab, hidden_dim)
-        self.prot_aa = torch.nn.Embedding(self.protein_aa_vocab, hidden_dim)
+
+        # amino acid type can provide some coarse information about the local chemical environment of the protein atom, 
+        # which can help the model learn better representations and improve the accuracy of the predicted ligand atom types.
+        self.prot_aa = torch.nn.Embedding(self.protein_aa_vocab, hidden_dim) 
+
+        # whether the protein atom is a backbone atom
         self.prot_bb = torch.nn.Embedding(2, hidden_dim)
 
+        # ligand atom type
         self.lig_type = torch.nn.Embedding(self.k, hidden_dim)
+
+        # time step embedding
         self.time = torch.nn.Embedding(self.t, hidden_dim)
 
         self.v_head = torch.nn.Sequential(
@@ -155,13 +163,19 @@ class LigandDiffusion(torch.nn.Module):
             torch.nn.Linear(hidden_dim, self.k),
         )
 
+        # noise schedule for the atom positions, 
+        # precomputed and stored as buffers for efficient indexing during training and sampling
         betas = sigmoid_beta_schedule(self.t, beta1, betaT)
         alphas = 1.0 - betas
         abar = torch.cumprod(alphas, dim=0)
+
+        # regsister_buffer() stores tensors that aren't learnable params but are part of module's state,
+        # and move with the module across devices (to GPU/CPU) and are saved/loaded in the state_dict.
         self.register_buffer("betas_x", torch.cat([torch.zeros(1), betas], dim=0))
         self.register_buffer("alphas_x", torch.cat([torch.ones(1), alphas], dim=0))
         self.register_buffer("abar_x", torch.cat([torch.ones(1), abar], dim=0))
 
+        # noise schedule for the position
         alpha_step_sqrt = cosine_alpha_sqrt_schedule(self.t, type_cos_s)
         abar_v = torch.cumprod(alpha_step_sqrt, dim=0)
         self.register_buffer("alpha_v", torch.cat([torch.ones(1), alpha_step_sqrt], dim=0))
@@ -268,7 +282,10 @@ class LigandDiffusion(torch.nn.Module):
             t_graph = torch.full((bsz,), t - 1, device=device, dtype=torch.long)
             t_atom = torch.full((n_lig,), t, device=device, dtype=torch.long)
 
+            # predict the original atom positions and types from the noisy input
             x0_hat, v0_logits = self.predict_x0_v0(batch_ctx, protein_pos, ligand_pos, vt_idx, t_graph)
+
+            # interpolate between the predicted mean x0_hat and the noisy xt according to variance schedule
             mean, var = self.posterior_x(ligand_pos, x0_hat.float(), t_atom)
             ligand_pos = mean if t == 1 else mean + torch.sqrt(var) * torch.randn_like(mean)
 

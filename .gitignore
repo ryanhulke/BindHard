@@ -5,4 +5,5 @@ __pycache__/
 checkpoints/
 wandb/
 slurm*.out
+.vscode
 
