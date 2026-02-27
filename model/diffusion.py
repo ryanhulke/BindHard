@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterable, Tuple
 import torch
 import torch.nn.functional as F
+from tqdm import tqdm
 from model.common import compose_context
 
 def center_by_protein(
@@ -256,11 +257,18 @@ class LigandDiffusion(torch.nn.Module):
 
     # the sampling process starts from pure noise and iteratively denoises it using the learned model
     @torch.no_grad()
-    def sample(self, protein_batch_dict: Dict[str, torch.Tensor], prior: AtomCountPrior) -> Dict[str, torch.Tensor]:
+    def sample(
+        self,
+        protein_batch_dict: Dict[str, torch.Tensor],
+        prior: AtomCountPrior,
+        return_trajectory: bool = False,
+        trajectory_stride: int = 1,
+    ) -> Dict[str, torch.Tensor]:
         device = protein_batch_dict["protein_pos"].device
         protein_pos = protein_batch_dict["protein_pos"].float()
         protein_batch = protein_batch_dict["protein_batch"].long()
         bsz = int(protein_batch.max().item()) + 1
+        trajectory_stride = max(1, int(trajectory_stride))
 
         counts = []
         for b in range(bsz):
@@ -278,14 +286,29 @@ class LigandDiffusion(torch.nn.Module):
         batch_ctx = dict(protein_batch_dict)
         batch_ctx["ligand_batch"] = ligand_batch
 
+        trajectory = [] if return_trajectory else None
+
+        def record_frame(step: int) -> None:
+            if trajectory is None:
+                return
+            if step != self.t and step != 0 and step % trajectory_stride != 0:
+                return
+            trajectory.append(
+                {
+                    "t": step,
+                    "ligand_pos": ligand_pos.detach().cpu(),
+                    "ligand_type": vt_idx.detach().cpu(),
+                }
+            )
+
+        record_frame(self.t)
+
         for t in range(self.t, 0, -1):
             t_graph = torch.full((bsz,), t - 1, device=device, dtype=torch.long)
             t_atom = torch.full((n_lig,), t, device=device, dtype=torch.long)
 
-            # predict the original atom positions and types from the noisy input
             x0_hat, v0_logits = self.predict_x0_v0(batch_ctx, protein_pos, ligand_pos, vt_idx, t_graph)
 
-            # interpolate between the predicted mean x0_hat and the noisy xt according to variance schedule
             mean, var = self.posterior_x(ligand_pos, x0_hat.float(), t_atom)
             ligand_pos = mean if t == 1 else mean + torch.sqrt(var) * torch.randn_like(mean)
 
@@ -293,7 +316,9 @@ class LigandDiffusion(torch.nn.Module):
             p = self.posterior_v(vt_idx, v0_probs_hat, t_atom)
             vt_idx = sample_categorical(p)
 
-        return {
+            record_frame(t - 1)
+
+        out = {
             "ligand_pos": ligand_pos,
             "ligand_type": vt_idx,
             "ligand_batch": ligand_batch,
@@ -301,6 +326,11 @@ class LigandDiffusion(torch.nn.Module):
             "protein_pos": protein_pos,
             "protein_batch": protein_batch,
         }
+
+        if trajectory is not None:
+            out["trajectory"] = trajectory
+
+        return out
 
     # combine the regression loss for position and the scaled KL divergence for type prediction
     def loss(self, batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:

@@ -9,13 +9,16 @@ from datamodules import CrossDockedDataModule
 
 
 def main():
-    cfg = InferenceConfig(ckpt="checkpoints/best.pt")
+    cfg = InferenceConfig(ckpt="checkpoints/7nogxr5q/paper_reproduction_best.pt")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print("starting...")
+    samples_per_target = getattr(cfg, "samples_per_target", 100)
+    save_trajectory = getattr(cfg, "save_trajectory", True)
 
     dm = CrossDockedDataModule(
         lmdb_path=cfg.lmdb_path,
         split_pt_path=cfg.split_path,
-        batch_size=cfg.batch_size,
+        batch_size=1,
         num_workers=cfg.num_workers,
         pin_memory=cfg.pin_memory,
         persistent_workers=cfg.persistent_workers,
@@ -34,7 +37,7 @@ def main():
         norm=False,
     ).to(device)
 
-    ligand_diffusion = LigandDiffusion(
+    model = LigandDiffusion(
         denoiser=denoiser,
         num_types=cfg.num_types,
         steps=cfg.steps,
@@ -43,26 +46,72 @@ def main():
     ).to(device)
 
     ckpt = torch.load(cfg.ckpt, map_location="cpu")
-    ligand_diffusion.load_state_dict(ckpt["diffusion"], strict=True)
-    ligand_diffusion.eval()
+    model.load_state_dict(ckpt["diffusion"], strict=True)
+    model.eval()
 
-    prior = AtomCountPrior.from_state_dict(ckpt["prior"]) if isinstance(ckpt, dict) and "prior" in ckpt else AtomCountPrior.fit(dm.ds_train, n_bins=10)
+    print("model loaded")
+    if "prior" in ckpt:
+        prior = AtomCountPrior.from_state_dict(ckpt["prior"])
+        print("prior loaded from checkpoint")
+    else:
+        print("fitting prior...")
+        prior = AtomCountPrior.fit(dm.ds_train, n_bins=10)
 
     out_dir = Path("inference") / Path(cfg.ckpt).stem
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    keys = ["protein_pos", "protein_batch", "protein_element", "protein_atom_to_aa_type", "protein_is_backbone"]
+    protein_keys = [
+        "protein_pos",
+        "protein_batch",
+        "protein_element",
+        "protein_atom_to_aa_type",
+        "protein_is_backbone",
+    ]
+
+    ref_keys = [
+        "ligand_pos",
+        "ligand_element",
+        "ligand_bond_index",
+        "ligand_bond_type",
+        "affinity",
+    ]
+
     amp = device.type == "cuda"
     amp_dtype = torch.bfloat16 if amp else torch.float32
+    print("starting inference...")
+    for target_idx, batch in enumerate(tqdm(dm.test_dataloader(), desc="target")):
+        protein = {k: batch[k].to(device, non_blocking=True) for k in protein_keys}
+        samples = []
 
-    for i, batch in enumerate(tqdm(dm.test_dataloader(), desc="sample")):
-        protein_batch_dict = {k: batch[k].to(device, non_blocking=True) for k in keys if k in batch}
+        for sample_idx in tqdm(range(samples_per_target)):
+            with torch.inference_mode(), torch.autocast(
+                device_type=device.type,
+                dtype=amp_dtype,
+                enabled=amp,
+            ):
+                if save_trajectory:
+                    sample = model.sample(protein, prior, return_trajectory=True, trajectory_stride=10)
+                else:
+                    sample = model.sample(protein, prior)
 
-        with torch.inference_mode(), torch.autocast(device_type=device.type, dtype=amp_dtype, enabled=amp):
-            sample = ligand_diffusion.sample(protein_batch_dict, prior)
+            sample = {
+                k: (v.detach().cpu() if torch.is_tensor(v) else v)
+                for k, v in sample.items()
+            }
+            sample["sample_idx"] = sample_idx
+            samples.append(sample)
 
-        out = {k: (v.detach().cpu() if torch.is_tensor(v) else v) for k, v in sample.items()}
-        torch.save(out, out_dir / f"sample_{i:06d}.pt") # save each predicted complex to a separate file
+        target_dir = out_dir / f"{target_idx:06d}"
+        target_dir.mkdir(parents=True, exist_ok=True)
+        torch.save(
+            {
+                "target_idx": target_idx,
+                "protein": {k: batch[k].cpu() for k in protein_keys},
+                "reference": {k: batch[k].cpu() for k in ref_keys if k in batch},
+                "samples": samples,
+            },
+            target_dir / "target.pt",
+        )
 
 
 if __name__ == "__main__":
