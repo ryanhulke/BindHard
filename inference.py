@@ -1,6 +1,7 @@
 from pathlib import Path
 import torch
 from tqdm import tqdm
+import yaml
 
 from model.diffusion import AtomCountPrior, LigandDiffusion
 from model.egnn import EGNN
@@ -9,16 +10,16 @@ from datamodules import CrossDockedDataModule
 
 
 def main():
-    cfg = InferenceConfig(ckpt="checkpoints/7nogxr5q/paper_reproduction_best.pt")
+    with open("config/inference/base_config.yaml", "r") as f:
+        cfg = InferenceConfig(**yaml.safe_load(f))  
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("starting...")
     samples_per_target = getattr(cfg, "samples_per_target", 100)
     save_trajectory = getattr(cfg, "save_trajectory", True)
 
     dm = CrossDockedDataModule(
         lmdb_path=cfg.lmdb_path,
         split_pt_path=cfg.split_path,
-        batch_size=1,
+        batch_size=cfg.batch_size,
         num_workers=cfg.num_workers,
         pin_memory=cfg.pin_memory,
         persistent_workers=cfg.persistent_workers,
@@ -26,15 +27,14 @@ def main():
     )
 
     denoiser = EGNN(
-        num_layers=6,
-        hidden_dim=256,
-        edge_feat_dim=4,
-        num_r_gaussian=16,
-        k=32,
-        cutoff_mode="knn",
-        update_x=True,
-        act_fn="silu",
-        norm=False,
+        num_layers=cfg.num_layers,
+        hidden_dim=cfg.hidden_dim,
+        edge_feat_dim=cfg.edge_feat_dim,
+        num_r_gaussian=cfg.num_r_gaussian,
+        message_passing_mode=cfg.message_passing_mode,
+        k=cfg.k,
+        cutoff_mode=cfg.cutoff_mode,
+        update_x=True
     ).to(device)
 
     model = LigandDiffusion(
@@ -49,12 +49,10 @@ def main():
     model.load_state_dict(ckpt["diffusion"], strict=True)
     model.eval()
 
-    print("model loaded")
     if "prior" in ckpt:
         prior = AtomCountPrior.from_state_dict(ckpt["prior"])
-        print("prior loaded from checkpoint")
     else:
-        print("fitting prior...")
+        print("fitting atom count prior...")
         prior = AtomCountPrior.fit(dm.ds_train, n_bins=10)
 
     out_dir = Path("inference") / Path(cfg.ckpt).stem
@@ -78,7 +76,6 @@ def main():
 
     amp = device.type == "cuda"
     amp_dtype = torch.bfloat16 if amp else torch.float32
-    print("starting inference...")
     for target_idx, batch in enumerate(tqdm(dm.test_dataloader(), desc="target")):
         protein = {k: batch[k].to(device, non_blocking=True) for k in protein_keys}
         samples = []

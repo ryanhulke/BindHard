@@ -6,5 +6,6 @@ pin_memory: true
 persistent_workers: true
 prefetch_factor: 2
 
+message_passing_mode: "mlp" # mlp, attention
 resume: false
 # resume_ckpt: "checkpoints/last.pt"

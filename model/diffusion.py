@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Dict, Iterable, Tuple
 import torch
 import torch.nn.functional as F
-from tqdm import tqdm
 from model.common import compose_context
 
 def center_by_protein(

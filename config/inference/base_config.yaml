@@ -1,0 +1,13 @@
+message_passing_mode: "mlp" # mlp, attention
+
+steps: 1000 # diffusion steps for inference
+type_loss_scale: 100.0
+protein_noise_std: 0.1
+
+batch_size:  1
+num_workers:  2
+pin_memory: True
+persistent_workers: True
+prefetch_factor: 2
+
+ckpt: "checkpoints/7nogxr5q/paper_reproduction_best.pt"

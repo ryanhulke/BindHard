@@ -72,15 +72,14 @@ def train():
     )
 
     denoiser = EGNN(
-        num_layers=6,
-        hidden_dim=256,
-        edge_feat_dim=4,
-        num_r_gaussian=16,
-        k=32,
-        cutoff_mode="knn",
-        update_x=True,
-        act_fn="silu",
-        norm=False,
+        num_layers=cfg.num_layers,
+        hidden_dim=cfg.hidden_dim,
+        edge_feat_dim=cfg.edge_feat_dim,
+        num_r_gaussian=cfg.num_r_gaussian,
+        message_passing_mode=cfg.message_passing_mode,
+        k=cfg.k,
+        cutoff_mode=cfg.cutoff_mode,
+        update_x=True
     ).to(device)
 
     ligand_diffusion = LigandDiffusion(

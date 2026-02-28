@@ -1,3 +1,5 @@
+# use openbabel to build molecules from the predicted geometry and atom types
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
