@@ -31,13 +31,34 @@ def load_target_file(path: Path) -> dict[str, Any]:
         raise ValueError(f"{path} is missing keys: {sorted(missing)}")
     return data
 
+# infer bonds between atoms in ligand
+def infer_mol_from_geometry(ligand_pos: torch.Tensor,ligand_type: torch.Tensor, atom_type_decoder: dict[int, Any], ) -> Any | None:
+    ob = openbabel.openbabel
+    pos = ligand_pos.detach().cpu().float().numpy()
+    types = ligand_type.detach().cpu().numpy()
+    n = pos.shape[0]
 
-def infer_mol_from_geometry(
-    ligand_pos: torch.Tensor,
-    ligand_type: torch.Tensor,
-    atom_type_decoder: dict[int, Any],
-) -> Any | None:
-    raise NotImplementedError
+    if n == 0: return None
+    mol_ob = ob.OBMol()
+    mol_ob.BeginModify()
+
+    for i in range(n):
+        type_idx = int(types[i])
+        atomic_num = atom_type_decoder.get(type_idx)
+        if atomic_num is None: return None
+        atom = mol_ob.NewAtom()
+        atom.SetAtomicNum(int(atomic_num))
+        atom.SetVector(float(pos[i, 0]), float(pos[i, 1]), float(pos[i, 2]))
+
+    mol_ob.EndModify()
+    mol_ob.ConnectTheDots()       # infer bonds from covalent-radius
+    mol_ob.PerceiveBondOrders()   # assign bond orders
+    conv = ob.OBConversion()
+    conv.SetOutFormat("smi")
+    smi = conv.WriteString(mol_ob).strip()
+
+    if not smi: return None
+    return Chem.MolFromSmiles(smi) # docs said to ret this?
 
 
 def build_sample(
