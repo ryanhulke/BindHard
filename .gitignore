@@ -6,4 +6,5 @@ checkpoints/
 wandb/
 slurm*.out
 .vscode
-
+frontend/node_modules/
+frontend/dist/

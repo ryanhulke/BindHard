@@ -86,3 +86,6 @@ wandb==0.22.2
 wcwidth==0.5.3
 xxhash==3.6.0
 yarl==1.22.0
+fastapi==0.135.1
+uvicorn==0.34.0
+python-multipart==0.0.12
