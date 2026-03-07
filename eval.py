@@ -1,90 +1,159 @@
 from pathlib import Path
 from typing import Any
 import json
+import math
+import pickle
 import statistics
+
 from tqdm import tqdm
 from rdkit import Chem
-from rdkit.Chem import AllChem
 from rdkit.Chem import QED
+from rdkit.Chem import rdFingerprintGenerator
 from rdkit.Chem import rdMolDescriptors
-# also need the calculation for SA; reference TargetDiff repo. They use a custom calculation
-
-from vina import vina
-import subprocess # for docking
-
-from build_molecule import (
-    build_target,
-    list_target_files,
-    load_target_file,
-    valid_fraction,
-    valid_results,
-)
+from vina import Vina
 
 
-def run_vina_for_mol(
-    protein: dict[str, Any],
-    mol: Any,
-) -> float:
-    raise NotImplementedError
+def list_target_dirs(inference_dir: Path) -> list[Path]:
+    return sorted(
+        path
+        for path in inference_dir.iterdir()
+        if path.is_dir()
+        and (path / "docking.json").exists()
+        and (path / "reconstruction.json").exists()
+    )
 
 
-def compute_qed(mol: Any) -> float:
-    raise NotImplementedError
+def load_mol_from_sdf(path: Path) -> Chem.Mol | None:
+    mol = Chem.MolFromMolFile(str(path), sanitize=True, removeHs=False)
+    if mol is None:
+        return None
+    return mol
 
 
-def compute_sa(mol: Any) -> float:
-    raise NotImplementedError
+def compute_qed(mol: Chem.Mol) -> float:
+    return QED.qed(mol)
+
+
+def compute_sa(mol: Chem.Mol) -> float:
+    data = pickle.load(Path("data/fpscores.pkl").open("rb"))
+    fpscores: dict[int, float] = {}
+    for entry in data:
+        for bit_id in entry[1:]:
+            fpscores[bit_id] = float(entry[0])
+
+    sa_mfpgen = rdFingerprintGenerator.GetMorganGenerator(radius=2)
+    sparse_fp = sa_mfpgen.GetSparseCountFingerprint(mol)
+    nze = sparse_fp.GetNonzeroElements()
+
+    score1 = 0.0
+    nf = 0
+    for bit_id, count in nze.items():
+        nf += count
+        score1 += fpscores.get(bit_id, -4.0) * count
+
+    if nf == 0:
+        return float("nan")
+
+    score1 /= nf
+
+    n_atoms = mol.GetNumAtoms()
+    n_chiral_centers = len(Chem.FindMolChiralCenters(mol, includeUnassigned=True))
+    ring_info = mol.GetRingInfo()
+    n_spiro = rdMolDescriptors.CalcNumSpiroAtoms(mol)
+    n_bridgeheads = rdMolDescriptors.CalcNumBridgeheadAtoms(mol)
+    n_macrocycles = sum(1 for ring in ring_info.AtomRings() if len(ring) > 8)
+
+    size_penalty = n_atoms**1.005 - n_atoms
+    stereo_penalty = math.log10(n_chiral_centers + 1)
+    spiro_penalty = math.log10(n_spiro + 1)
+    bridge_penalty = math.log10(n_bridgeheads + 1)
+    macrocycle_penalty = math.log10(2) if n_macrocycles > 0 else 0.0
+
+    score2 = (
+        -size_penalty
+        - stereo_penalty
+        - spiro_penalty
+        - bridge_penalty
+        - macrocycle_penalty
+    )
+
+    score3 = 0.0
+    num_bits = len(nze)
+    if n_atoms > num_bits and num_bits > 0:
+        score3 = math.log(float(n_atoms) / num_bits) * 0.5
+
+    sa_score = score1 + score2 + score3
+
+    raw_min = -4.0
+    raw_max = 2.5
+    sa_score = 11.0 - (sa_score - raw_min + 1.0) / (raw_max - raw_min) * 9.0
+
+    if sa_score > 8.0:
+        sa_score = 8.0 + math.log(sa_score - 8.0)
+
+    if sa_score > 10.0:
+        return 10.0
+    if sa_score < 1.0:
+        return 1.0
+    return sa_score
 
 
 def compute_high_affinity_fraction(
     vina_scores: list[float],
-    reference: dict[str, Any],
+    reference_vina_score: float | None,
 ) -> float | None:
-    raise NotImplementedError
+    if not vina_scores or reference_vina_score is None:
+        return None
+    return sum(score <= reference_vina_score for score in vina_scores) / len(vina_scores)
 
 
-def mean_or_none(values: list[float]) -> float | None:
-    return statistics.mean(values) if values else None
+def evaluate_target_dir(path: Path) -> dict[str, Any]:
+    docking = json.loads((path / "docking.json").read_text(encoding="utf-8"))
+    recon = json.loads((path / "reconstruction.json").read_text(encoding="utf-8"))
 
+    box_size = [float(v) for v in docking["box_size"]]
+    if docking.get("box_formula") != "ref_span_plus_12_min22":
+        # Legacy inference folders used span+8 A (+4 A each side), which can clip
+        # generated ligands near the edge. Upgrade to span+12 A semantics.
+        box_size = [max(22.0, v + 4.0) for v in box_size]
 
-def median_or_none(values: list[float]) -> float | None:
-    return statistics.median(values) if values else None
+    v = Vina(sf_name="vina")
+    v.set_receptor(str(path / docking["receptor_pdbqt"]))
+    v.compute_vina_maps(center=docking["center"], box_size=box_size)
 
+    lig_dir = path / "ligands"
 
-def evaluate_target_file(
-    path: Path,
-    atom_type_decoder: dict[int, Any],
-) -> dict[str, Any]:
-    target = load_target_file(path)
-    built = build_target(target, atom_type_decoder)
+    vina_scores: list[float] = []
+    qed_scores: list[float] = []
+    sa_scores: list[float] = []
 
-    good = valid_results(built["built_samples"])
+    for row in recon["valid_samples"]:
+        pdbqt_path = lig_dir / row["pdbqt"]
+        sdf_path = lig_dir / row["sdf"]
 
-    vina_scores = [
-        run_vina_for_mol(built["protein"], result.mol)
-        for result in good
-    ]
-    qed_scores = [compute_qed(result.mol) for result in good]
-    sa_scores = [compute_sa(result.mol) for result in good]
+        mol = load_mol_from_sdf(sdf_path)
+        if mol is None:
+            continue
+
+        v.set_ligand_from_file(str(pdbqt_path))
+        vina_scores.append(float(v.score()[0]))
+        qed_scores.append(compute_qed(mol))
+        sa_scores.append(compute_sa(mol))
 
     return {
-        "target_idx": built["target_idx"],
-        "n_samples": len(built["built_samples"]),
-        "n_valid": len(good),
-        "valid_fraction": valid_fraction(built["built_samples"]),
+        "target_idx": recon["target_idx"],
+        "n_samples": recon["n_samples"],
+        "n_valid": recon["n_valid"],
+        "valid_fraction": recon["valid_fraction"],
         "vina_scores": vina_scores,
         "vina_min": min(vina_scores) if vina_scores else None,
-        "high_affinity_fraction": compute_high_affinity_fraction(vina_scores, built["reference"]),
+        "high_affinity_fraction": compute_high_affinity_fraction(
+            vina_scores,
+            docking.get("reference_vina_score"),
+        ),
         "qed_scores": qed_scores,
         "sa_scores": sa_scores,
-        "invalid_samples": [
-            {
-                "sample_idx": result.sample_idx,
-                "error": result.error,
-            }
-            for result in built["built_samples"]
-            if not result.ok
-        ],
+        "invalid_samples": recon["invalid_samples"],
     }
 
 
@@ -111,18 +180,18 @@ def summarize_results(target_results: list[dict[str, Any]]) -> dict[str, Any]:
         "n_targets": len(target_results),
         "n_samples_total": sum(row["n_samples"] for row in target_results),
         "n_valid_total": sum(row["n_valid"] for row in target_results),
-        "valid_fraction_mean": mean_or_none(valid_fracs),
-        "valid_fraction_median": median_or_none(valid_fracs),
-        "vina_mean": mean_or_none(all_vina),
-        "vina_median": median_or_none(all_vina),
-        "vina_min_mean": mean_or_none(vina_mins),
-        "vina_min_median": median_or_none(vina_mins),
-        "qed_mean": mean_or_none(all_qed),
-        "qed_median": median_or_none(all_qed),
-        "sa_mean": mean_or_none(all_sa),
-        "sa_median": median_or_none(all_sa),
-        "high_affinity_mean": mean_or_none(high_affinity),
-        "high_affinity_median": median_or_none(high_affinity),
+        "valid_fraction_mean": statistics.mean(valid_fracs) if valid_fracs else None,
+        "valid_fraction_median": statistics.median(valid_fracs) if valid_fracs else None,
+        "vina_mean": statistics.mean(all_vina) if all_vina else None,
+        "vina_median": statistics.median(all_vina) if all_vina else None,
+        "vina_min_mean": statistics.mean(vina_mins) if vina_mins else None,
+        "vina_min_median": statistics.median(vina_mins) if vina_mins else None,
+        "qed_mean": statistics.mean(all_qed) if all_qed else None,
+        "qed_median": statistics.median(all_qed) if all_qed else None,
+        "sa_mean": statistics.mean(all_sa) if all_sa else None,
+        "sa_median": statistics.median(all_sa) if all_sa else None,
+        "high_affinity_mean": statistics.mean(high_affinity) if high_affinity else None,
+        "high_affinity_median": statistics.median(high_affinity) if high_affinity else None,
     }
 
 
@@ -131,16 +200,14 @@ def save_results(payload: dict[str, Any], out_path: Path) -> None:
 
 
 def main() -> None:
-    inference_dir = Path("inference") / "best"
+    inference_dir = Path("inference") / "gat_egnn_diffusion_last"
     out_path = inference_dir / "eval.json"
 
-    atom_type_decoder: dict[int, Any] = {}
-
-    target_files = list_target_files(inference_dir)
+    target_dirs = list_target_dirs(inference_dir)
     target_results = []
 
-    for path in tqdm(target_files, desc="eval"):
-        target_results.append(evaluate_target_file(path, atom_type_decoder))
+    for path in tqdm(target_dirs, desc="eval"):
+        target_results.append(evaluate_target_dir(path))
 
     payload = {
         "inference_dir": str(inference_dir),

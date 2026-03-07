@@ -6,14 +6,15 @@ class TrainConfig:
     split_path: str = "data/crossdocked_pose_split_from_name_val1000.pt"
 
     # model
-    num_layers: int = 6
-    hidden_dim: int = 256
+    num_layers: int = 9
+    hidden_dim: int = 128
     edge_feat_dim: int = 4
     num_r_gaussian: int = 16
     k: int = 32
     cutoff_mode: str = "knn"
     message_passing_mode: str = "attention" # mlp, attention
     num_types: int = 7
+    norm: bool = True
 
     # diffusion params
     steps: int = 1000
@@ -51,14 +52,14 @@ class InferenceConfig:
     split_path: str = "data/crossdocked_pose_split_from_name_val1000.pt"
 
     # model
-    num_layers: int = 6
-    hidden_dim: int = 256
+    num_layers: int = 9
+    hidden_dim: int = 128
     edge_feat_dim: int = 4
     num_r_gaussian: int = 16
     k: int = 32
     cutoff_mode: str = "knn"
     message_passing_mode: str = "attention" # mlp, attention
-    
+    norm: bool = True
 
     num_types: int = 7
     steps: int = 1000

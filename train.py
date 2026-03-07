@@ -6,12 +6,12 @@ from tqdm import tqdm
 
 from config.config import TrainConfig
 from datamodules import CrossDockedDataModule
-from model.diffusion import LigandDiffusion
+from model.flow_matching import LigandFlowMatching
 from model.egnn import EGNN
 
 
 @torch.no_grad()
-def eval_epoch(diffusion: LigandDiffusion, loader, device: torch.device) -> dict:
+def eval_epoch(diffusion: LigandFlowMatching, loader, device: torch.device) -> dict:
     diffusion.eval()
     loss_sum = 0.0
     pos_sum = 0.0
@@ -43,7 +43,7 @@ def eval_epoch(diffusion: LigandDiffusion, loader, device: torch.device) -> dict
 
 
 def train():
-    with open("config/train/base_config.yaml", "r") as f:
+    with open("config/train/flow_matching.yaml", "r") as f:
         cfg = TrainConfig(**yaml.safe_load(f))
 
     torch.manual_seed(cfg.seed)
@@ -79,15 +79,17 @@ def train():
         message_passing_mode=cfg.message_passing_mode,
         k=cfg.k,
         cutoff_mode=cfg.cutoff_mode,
-        update_x=True
+        update_x=True,
+        norm=cfg.norm,
     ).to(device)
 
-    ligand_diffusion = LigandDiffusion(
+    ligand_diffusion = LigandFlowMatching(
         denoiser=denoiser,
         num_types=cfg.num_types,
         steps=cfg.steps,
         type_loss_scale=cfg.type_loss_scale,
         protein_noise_std=cfg.protein_noise_std,
+        hidden_dim=cfg.hidden_dim,
     ).to(device)
 
     optimizer = torch.optim.AdamW(ligand_diffusion.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay, fused=True)

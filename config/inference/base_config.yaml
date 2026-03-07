@@ -1,4 +1,4 @@
-message_passing_mode: "mlp" # mlp, attention
+message_passing_mode: "attention" # mlp, attention
 
 steps: 1000 # diffusion steps for inference
 type_loss_scale: 100.0
@@ -10,4 +10,4 @@ pin_memory: True
 persistent_workers: True
 prefetch_factor: 2
 
-ckpt: "checkpoints/7nogxr5q/paper_reproduction_best.pt"
+ckpt: "checkpoints/nibf95oq/gat_egnn_diffusion_last.pt"

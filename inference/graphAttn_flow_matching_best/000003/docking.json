@@ -1,0 +1,16 @@
+{
+  "center": [
+    2.260197639465332,
+    -2.996302604675293,
+    1.0109715461730957
+  ],
+  "box_size": [
+    18.0,
+    18.0,
+    18.0
+  ],
+  "receptor_pdbqt": "receptor.pdbqt",
+  "reference_sdf": "reference.sdf",
+  "reference_pdbqt": "reference.pdbqt",
+  "reference_vina_score": -5.987
+}

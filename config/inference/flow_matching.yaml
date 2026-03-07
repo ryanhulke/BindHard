@@ -1,0 +1,15 @@
+batch_size: 1
+num_workers: 2
+pin_memory: true
+persistent_workers: true
+prefetch_factor: 1
+
+message_passing_mode: "attention" # mlp, attention
+
+# model
+hidden_dim: 128
+num_layers: 9
+norm: true
+steps: 100
+
+ckpt: "checkpoints/wgwnxpac/graphAttn_flow_matching_best.pt"

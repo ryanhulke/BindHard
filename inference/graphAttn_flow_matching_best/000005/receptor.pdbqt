@@ -1,0 +1,1235 @@
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -2.228   6.827  -9.008  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.419   7.039  -7.570  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -1.262   7.811  -6.923  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -1.427   8.362  -5.836  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.590   5.717  -6.825  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.946   5.039  -7.102  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.122   5.849  -6.550  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.455   5.104  -6.737  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -7.637   5.952  -6.324  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       1.970  -5.921  -1.447  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.653  -6.578  -1.318  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.346  -7.564  -2.427  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -0.554  -8.387  -2.278  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.488  -5.549  -1.278  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.440  -4.651  -0.082  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -0.502  -5.144   1.208  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.340  -3.302   0.030  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.443  -4.133   2.061  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -0.351  -3.007   1.374  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -3.273  -6.175  -5.711  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.879  -5.793  -4.446  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.216  -4.536  -3.916  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -2.013  -4.446  -3.986  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.700  -6.929  -3.425  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -4.240  -6.550  -2.178  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -3.978  -3.584  -3.380  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.330  -2.514  -2.625  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.386  -1.654  -3.464  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -1.328  -1.213  -2.989  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -2.793  -1.424  -4.711  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.011  -0.627  -5.683  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.738  -1.342  -6.150  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       0.122  -0.722  -6.811  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -1.600   0.742  -5.130  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.756   1.631  -4.686  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.507   2.691  -3.824  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.045   1.442  -5.145  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.535   3.534  -3.397  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.083   2.292  -4.727  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.810   3.329  -3.855  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -0.626  -2.629  -5.815  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.538  -3.458  -6.159  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.166  -4.441  -7.259  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -0.796  -5.181  -7.104  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.056  -4.273  -4.949  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  S   UNL     1       1.443  -3.270  -3.509  0.00  0.00    +0.000 S 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       0.891  -0.543   6.205  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.050  -1.723   6.008  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.832  -3.035   6.160  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       2.035  -3.093   5.925  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.613  -1.685   4.614  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -1.456  -0.467   4.384  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -0.948   0.698   3.845  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.758  -0.224   4.649  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -1.912   1.599   3.767  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -3.023   1.069   4.252  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -9.356  -2.650   8.823  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -8.277  -1.905   8.190  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -7.459  -2.804   7.249  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -7.060  -3.902   7.609  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -7.360  -1.282   9.253  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.317  -0.391   8.672  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.636   0.893   8.281  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.021  -0.843   8.475  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.676   1.720   7.718  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.047  -0.008   7.916  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.377   1.269   7.532  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -7.210  -2.308   6.046  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.540  -3.076   4.985  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.129  -3.553   5.358  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -4.349  -2.799   5.954  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.455  -2.208   3.720  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.818  -2.904   2.551  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.462  -2.710   2.260  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.567  -3.759   1.743  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.858  -3.345   1.177  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.968  -4.397   0.654  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.607  -4.201   0.382  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -4.774  -4.803   4.975  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -5.537  -5.870   4.292  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -6.269  -6.817   5.258  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -6.934  -7.755   4.791  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.450  -6.643   3.532  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.269  -6.536   4.448  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.337  -5.131   5.058  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -3.747   8.606   4.663  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.161   7.450   5.448  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.430   7.865   6.902  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -5.169   7.185   7.594  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.100   6.335   5.404  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.839   5.774   4.009  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  S   UNL     1      -4.276   4.794   3.525  0.00  0.00    +0.000 S 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.879   4.421   1.811  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       1.486   8.548   0.222  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.484   9.153  -0.657  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.393  10.656  -0.518  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -0.237  11.297  -1.332  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.885   8.458  -0.429  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.658   6.982  -0.687  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.514   6.055   0.368  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.468   6.533  -1.986  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.241   4.686   0.094  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.190   5.187  -2.265  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.061   4.275  -1.232  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       0.260   2.952  -1.575  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -2.531  10.934   3.715  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.996  10.863   3.713  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.571   9.627   4.434  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -5.754   9.651   4.807  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.345  10.850   2.206  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.102  10.347   1.523  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -1.978  10.993   2.343  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -1.268   6.440 -11.619  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.141   7.587 -11.352  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.413   7.835  -9.859  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -2.791   8.952  -9.488  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.453   7.417 -12.098  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -9.808  -0.300 -13.726  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -9.745   1.002 -14.388  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -8.497   1.138 -15.263  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -7.904   0.136 -15.678  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -9.773   2.124 -13.347  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -4.974   2.475 -14.760  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.189   2.889 -13.585  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -2.976   3.774 -13.885  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -2.436   4.377 -12.964  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.735   1.546 -12.989  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.679   0.612 -14.188  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -4.809   1.042 -15.075  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1     -11.253  -4.175  10.187  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1     -11.679  -3.309   9.099  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1     -10.571  -2.627   8.294  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1     -10.797  -2.075   7.204  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -3.411  -8.900  -8.051  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.020  -7.539  -7.710  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.838  -7.085  -6.502  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1      -4.987  -7.522  -6.321  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -3.253  -6.601  -8.896  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       3.719   5.836   4.146  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       2.356   6.161   4.537  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       2.143   6.075   6.057  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       1.032   6.200   6.533  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.312   5.304   3.791  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.648   3.801   3.735  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       2.644   3.342   4.332  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       0.878   3.076   3.062  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       6.408  -3.003  -3.567  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.963  -3.217  -3.706  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.526  -4.550  -3.128  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       4.208  -5.521  -3.816  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.556  -3.018  -5.172  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.963  -1.606  -5.532  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.090  -1.223  -6.221  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.328  -0.403  -5.091  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       6.156   0.157  -6.274  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       5.085   0.680  -5.597  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.165  -0.133  -4.347  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.722   2.014  -5.383  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       2.799   1.204  -4.128  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.585   2.262  -4.649  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       4.432  -4.519  -1.805  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.383  -5.703  -0.950  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.047  -6.451  -0.852  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       3.007  -7.523  -0.236  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.837  -5.265   0.469  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.956  -4.216   1.100  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       4.005  -3.939   2.453  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       2.998  -3.409   0.586  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.096  -3.019   2.747  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       2.476  -2.675   1.632  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       6.086  -0.240   6.157  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.883   0.377   5.568  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.762   0.428   6.620  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       3.755  -0.375   7.558  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.443  -0.472   4.349  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.429   0.211   3.468  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       3.849   0.803   2.445  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       2.225   0.102   3.771  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       2.825   1.360   6.481  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.666   1.422   7.380  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.906   0.099   7.371  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       0.318  -0.310   8.378  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.721   2.537   6.943  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.531   2.691   7.792  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.209   3.078   9.245  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -1.457   3.706   7.134  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       7.569   2.070  -1.199  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.276   1.426  -1.020  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       5.170   2.458  -1.014  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       5.139   3.355  -1.858  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       4.253   2.354  -0.045  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.200   3.356   0.046  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.788   4.720   0.404  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       4.974   4.839   0.689  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       2.946   5.752   0.360  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.384   7.109   0.667  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       2.573   7.966  -0.285  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       2.912   8.052  -1.460  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       9.016  -1.907  -3.705  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       8.387  -2.130  -2.407  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.898  -2.480  -2.441  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       6.199  -2.335  -1.439  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       0.117  -4.086   6.536  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.746  -5.414   6.673  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.340  -5.889   5.348  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       0.651  -5.875   4.319  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      -0.299  -6.428   7.166  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.217  -7.829   7.279  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      -0.476  -8.914   6.788  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.349  -8.323   7.835  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.198 -10.021   7.048  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       1.310  -9.690   7.681  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       2.594  -6.339   5.381  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       3.227  -6.861   4.167  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       2.751  -8.274   3.845  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       3.542  -9.217   3.912  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       7.820   2.045   3.306  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.660   2.811   2.851  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.367   3.983   3.762  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       6.275   3.817   4.975  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       6.211   5.168   3.166  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.097   6.415   3.908  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       4.647   6.791   4.254  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       4.368   7.948   4.610  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       6.783   7.564   3.095  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      10.316   0.877  -5.764  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       9.882  -0.497  -5.520  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       9.214  -0.659  -4.149  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       8.872   0.342  -3.505  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       1.069  -7.490  -3.541  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.695  -8.356  -4.670  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       0.932  -9.826  -4.309  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       1.929 -10.135  -3.660  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       1.488  -7.961  -5.921  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      11.547  -2.565   3.503  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      10.504  -1.817   2.824  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1      10.154  -0.629   3.723  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       9.852  -0.808   4.911  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       9.292  -2.747   2.568  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       8.295  -2.284   1.501  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       7.205  -1.368   2.046  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       7.359  -0.773   3.120  0.00  0.00    +0.000 OA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1       6.079  -1.254   1.309  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  N   UNL     1      11.006   1.428  -1.360  0.00  0.00    +0.000 NA
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       9.957   2.346  -0.930  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  C   UNL     1       8.670   1.578  -0.654  0.00  0.00    +0.000 C 
+TER 
+REMARK  Name = 
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ATOM      1  O   HOH     1       8.679   0.548   0.004  0.00  0.00    +0.000 OA
+TER 

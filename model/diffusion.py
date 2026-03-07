@@ -1,22 +1,8 @@
 import math
-from dataclasses import dataclass
-from typing import Dict, Iterable, Tuple
+from typing import Dict, Tuple
 import torch
 import torch.nn.functional as F
-from model.common import compose_context
-
-def center_by_protein(
-    protein_pos: torch.Tensor,
-    ligand_pos: torch.Tensor,
-    protein_batch: torch.Tensor,
-    ligand_batch: torch.Tensor,
-    bsz: int,
-) -> Tuple[torch.Tensor, torch.Tensor]:
-    out = torch.zeros((bsz, protein_pos.shape[-1]), device=protein_pos.device, dtype=protein_pos.dtype)
-    out.index_add_(0, protein_batch, protein_pos)
-    counts = torch.bincount(protein_batch, minlength=bsz).clamp_min(1).to(protein_pos.dtype)
-    mean_p = out / counts[:, None]
-    return protein_pos - mean_p[protein_batch], ligand_pos - mean_p[ligand_batch]
+from model.common import AtomCountPrior, compose_context, sample_categorical, center_by_protein
 
 
 #  noise schedule for the Position
@@ -33,88 +19,6 @@ def cosine_alpha_sqrt_schedule(steps: int, s: float) -> torch.Tensor:
     a = (ac[1:] / ac[:-1]).clamp(0.001, 1.0)
     return torch.sqrt(a).to(torch.float32)
 
-# sample atom types
-def sample_categorical(probs: torch.Tensor) -> torch.Tensor:
-    eps = 1e-20
-    u = torch.rand_like(probs).clamp_(eps, 1.0 - eps)
-    g = -torch.log(-torch.log(u))
-    return (torch.log(probs.clamp_min(eps)) + g).argmax(dim=-1)
-
-
-# before training the diffusion model, we can fit a simple prior distribution of
-# ligand atom counts conditioned on the protein pocket size, which can be used to guide the sampling process.
-@dataclass
-class AtomCountPrior:
-    edges: torch.Tensor
-    values: Tuple[torch.Tensor, ...] # list of unique atom counts in each pocket size bin
-    probs: Tuple[torch.Tensor, ...] # list of probabilities corresponding to the unique atom counts in each pocket size bin
-
-    def state_dict(self) -> dict:
-        return {
-            "edges": self.edges.detach().cpu(),
-            "values": [v.detach().cpu() for v in self.values],
-            "probs": [p.detach().cpu() for p in self.probs],
-        }
-
-    @staticmethod
-    def from_state_dict(d: dict) -> "AtomCountPrior":
-        return AtomCountPrior(
-            edges=d["edges"],
-            values=tuple(d["values"]),
-            probs=tuple(d["probs"]),
-        )
-    # pocket size defined as median of the top-10 farthest pairwise distances between protein pocket atoms.
-    @staticmethod
-    def pocket_size(protein_pos: torch.Tensor) -> float:
-        n = int(protein_pos.shape[0])
-        if n < 2:
-            return 0.0
-        d = torch.pdist(protein_pos.float(), p=2)
-        k = min(10, int(d.numel()))
-        top = torch.topk(d, k=k, largest=True).values
-        return float(top.median().item())
-
-    @staticmethod
-    def fit(examples: Iterable[Dict[str, torch.Tensor]], n_bins: int = 10) -> "AtomCountPrior":
-        sizes = []
-        counts = []
-        for ex in examples:
-            sizes.append(AtomCountPrior.pocket_size(ex["protein_pos"]))
-            counts.append(int(ex["ligand_pos"].shape[0]))
-        sizes_t = torch.tensor(sizes, dtype=torch.float32)
-        counts_t = torch.tensor(counts, dtype=torch.long)
-
-        qs = torch.linspace(0, 1, n_bins + 1)
-        edges = torch.quantile(sizes_t, qs).unique(sorted=True)
-        if int(edges.numel()) < 2:
-            mn = float(sizes_t.min().item())
-            mx = float(sizes_t.max().item())
-            edges = torch.tensor([mn, mx + 1e-3], dtype=torch.float32)
-
-        bins = torch.bucketize(sizes_t, edges[1:-1], right=False)
-        vals = []
-        probs = []
-        for b in range(int(edges.numel()) - 1):
-            idx = (bins == b).nonzero(as_tuple=False).flatten()
-            if int(idx.numel()) == 0:
-                med = int(counts_t.median().item())
-                vals.append(torch.tensor([med], dtype=torch.long))
-                probs.append(torch.tensor([1.0], dtype=torch.float32))
-                continue
-            c = counts_t[idx]
-            u, f = torch.unique(c, return_counts=True)
-            vals.append(u)
-            probs.append((f.float() / f.sum()).float())
-        return AtomCountPrior(edges=edges, values=tuple(vals), probs=tuple(probs))
-
-    def sample(self, protein_pos: torch.Tensor, device: torch.device) -> int:
-        size = AtomCountPrior.pocket_size(protein_pos.detach().to("cpu"))
-        edges = self.edges.detach().to("cpu")
-        b = int(torch.bucketize(torch.tensor([size]), edges[1:-1], right=False).item())
-        v = self.values[b].to(device)
-        p = self.probs[b].to(device)
-        j = int(torch.multinomial(p, 1).item())
-        return int(v[j].item())
 
 
 class LigandDiffusion(torch.nn.Module):
@@ -262,11 +166,33 @@ class LigandDiffusion(torch.nn.Module):
         prior: AtomCountPrior,
         return_trajectory: bool = False,
         trajectory_stride: int = 1,
+        num_samples: int = 1,
     ) -> Dict[str, torch.Tensor]:
         device = protein_batch_dict["protein_pos"].device
         protein_pos = protein_batch_dict["protein_pos"].float()
         protein_batch = protein_batch_dict["protein_batch"].long()
+        num_samples = int(num_samples)
+        if num_samples < 1:
+            raise ValueError(f"num_samples must be >= 1, got {num_samples}")
         bsz = int(protein_batch.max().item()) + 1
+        if num_samples > 1:
+            n_atoms = int(protein_batch.numel())
+            gather_idx = torch.cat(
+                [torch.where(protein_batch == b)[0].repeat(num_samples) for b in range(bsz)],
+                dim=0,
+            )
+            repeated_counts = torch.bincount(protein_batch, minlength=bsz).repeat_interleave(num_samples)
+            protein_batch = torch.repeat_interleave(
+                torch.arange(bsz * num_samples, device=device, dtype=torch.long),
+                repeated_counts,
+            )
+            protein_batch_dict = {
+                k: (v[gather_idx] if v.ndim > 0 and int(v.shape[0]) == n_atoms else v)
+                for k, v in protein_batch_dict.items()
+            }
+            protein_batch_dict["protein_batch"] = protein_batch
+            protein_pos = protein_batch_dict["protein_pos"].float()
+            bsz = int(protein_batch.max().item()) + 1
         trajectory_stride = max(1, int(trajectory_stride))
 
         counts = []
