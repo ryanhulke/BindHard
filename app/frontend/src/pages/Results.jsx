@@ -7,8 +7,27 @@ import TrajectoryViewer from '../components/TrajectoryViewer'
 import { fetchJob, fetchSamples, sortSamplesByVina } from '../lib/trajectoryApi'
 
 function firstSelectableSample(samples) {
-  const completed = samples.find((sample) => sample?.status === 'completed')
-  return completed ?? samples[0] ?? null
+  return samples[0] ?? null
+}
+
+function getDefaultFrameIndex(sample) {
+  const trajectory = Array.isArray(sample?.trajectory) ? sample.trajectory : []
+  return trajectory.length > 0 ? trajectory.length - 1 : 0
+}
+
+function normalizeSaScoreToUnit(value) {
+  const numericValue = Number(value)
+  if (!Number.isFinite(numericValue)) return null
+  if (numericValue >= 0 && numericValue <= 1) return numericValue
+  if (numericValue >= 1 && numericValue <= 10) return (numericValue - 1) / 9
+  return null
+}
+
+function formatMetricValue(value, decimals, transform) {
+  const numericValue = Number(value)
+  if (!Number.isFinite(numericValue)) return '-'
+  const displayValue = transform ? transform(numericValue) : numericValue
+  return Number.isFinite(displayValue) ? displayValue.toFixed(decimals) : '-'
 }
 
 export default function Results() {
@@ -62,12 +81,13 @@ export default function Results() {
       }
 
       const sortedSamples = sortSamplesByVina(sampleRows)
-      const initialSample = firstSelectableSample(sortedSamples)
+      const completedSamples = sortedSamples.filter((sample) => sample?.status === 'completed')
+      const initialSample = firstSelectableSample(completedSamples)
 
       setJob(jobRow)
-      setSamples(sortedSamples)
+      setSamples(completedSamples)
       setSelectedSampleIdx(initialSample ? Number(initialSample.sample_idx) : null)
-      setFrameIndex(0)
+      setFrameIndex(getDefaultFrameIndex(initialSample))
       setViewerFrameCount(0)
       setIsPlaying(false)
     } catch (error) {
@@ -154,12 +174,12 @@ export default function Results() {
     frameCount > 1
 
   useEffect(() => {
-    setFrameIndex(0)
+    setFrameIndex(getDefaultFrameIndex(selectedSample))
     setViewerFrameCount(0)
     setViewerError('')
     setIsPlaying(false)
     setIsSampleMenuOpen(false)
-  }, [selectedSampleIdx])
+  }, [selectedSample])
 
   useEffect(() => {
     setViewerError('')
@@ -230,24 +250,6 @@ export default function Results() {
           <div className="mt-5 space-y-3">
             <div>
               <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-                Job ID
-              </span>
-              <div className="rounded-lg border border-white/10 bg-[#070b14] px-3 py-2 text-sm text-white">
-                {jobId || 'Missing'}
-              </div>
-            </div>
-
-            <div>
-              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-                Status
-              </span>
-              <div className="rounded-lg border border-white/10 bg-[#070b14] px-3 py-2 text-sm text-white">
-                {job?.status || 'Unknown'}
-              </div>
-            </div>
-
-            <div>
-              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
                 File
               </span>
               <div className="rounded-lg border border-white/10 bg-[#070b14] px-3 py-2 text-sm text-white">
@@ -260,9 +262,9 @@ export default function Results() {
                 <div>Samples: {summary.n_samples ?? '-'}</div>
                 <div>Valid: {summary.n_valid ?? '-'}</div>
                 <div>Invalid: {summary.n_invalid ?? '-'}</div>
-                <div>Mean Vina: {summary.vina_mean ?? '-'}</div>
-                <div>Mean QED: {summary.qed_mean ?? '-'}</div>
-                <div>Mean SA: {summary.sa_mean ?? '-'}</div>
+                <div>Mean Vina: {formatMetricValue(summary.vina_mean, 2)}</div>
+                <div>Mean QED: {formatMetricValue(summary.qed_mean, 3)}</div>
+                <div>Mean SA: {formatMetricValue(summary.sa_mean, 3, normalizeSaScoreToUnit)}</div>
               </div>
             )}
           </div>
@@ -304,11 +306,10 @@ export default function Results() {
                     {samples.map((sample) => {
                       const sampleIdx = Number(sample.sample_idx)
                       const isSelected = sampleIdx === Number(selectedSampleIdx)
-                      const status = String(sample.status || '')
                       const vinaText =
                         typeof sample.vina_score === 'number'
-                          ? ` | vina ${sample.vina_score.toFixed(2)}`
-                          : ''
+                          ? `vina ${sample.vina_score.toFixed(2)}`
+                          : null
 
                       return (
                         <li key={sample.sample_idx}>
@@ -327,9 +328,7 @@ export default function Results() {
                             aria-selected={isSelected}
                           >
                             <div>Sample {sampleIdx}</div>
-                            <div className="text-[11px] opacity-70">
-                              {status}{vinaText}
-                            </div>
+                            {vinaText && <div className="text-[11px] opacity-70">{vinaText}</div>}
                           </button>
                         </li>
                       )
@@ -397,10 +396,7 @@ export default function Results() {
         </aside>
 
         <section className="min-w-0 flex-1">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-white/45">
-              job: <span className="text-white/70">{jobId || '-'}</span>
-            </p>
+          <div className="mb-2 flex items-center justify-end">
             <p className="text-xs text-white/45">
               sample: <span className="text-white/70">{sampleLabel}</span>
             </p>
