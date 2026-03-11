@@ -3,18 +3,6 @@ import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
 
-function parseVec3Input(value, label) {
-  const parts = String(value)
-    .split(',')
-    .map((part) => Number(part.trim()))
-
-  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) {
-    throw new Error(`${label} must be 3 comma-separated numbers`)
-  }
-
-  return parts
-}
-
 export default function Upload() {
   const [file, setFile] = useState(null)
   const [dragging, setDragging] = useState(false)
@@ -23,10 +11,6 @@ export default function Upload() {
   const [errorMessage, setErrorMessage] = useState('')
 
   const [samplesPerTarget, setSamplesPerTarget] = useState('8')
-  const [returnTrajectory, setReturnTrajectory] = useState(true)
-  const [trajectoryStride, setTrajectoryStride] = useState('10')
-  const [boxCenterInput, setBoxCenterInput] = useState('0, 0, 0')
-  const [boxSizeInput, setBoxSizeInput] = useState('24, 24, 24')
 
   const inputRef = useRef(null)
   const navigate = useNavigate()
@@ -55,15 +39,8 @@ export default function Upload() {
     setStatusMessage('Uploading target and running generation...')
 
     try {
-      const boxCenter = parseVec3Input(boxCenterInput, 'Box center')
-      const boxSize = parseVec3Input(boxSizeInput, 'Box size')
-
       const payload = await uploadTarget(file, {
         samplesPerTarget: Number(samplesPerTarget),
-        returnTrajectory,
-        trajectoryStride: Number(trajectoryStride),
-        boxCenter,
-        boxSize,
       })
 
       const jobId = String(payload?.job_id || '')
@@ -89,7 +66,7 @@ export default function Upload() {
         <div className="text-center mb-10">
           <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase mb-3">GenBind</p>
           <h1 className="text-white text-4xl font-bold tracking-tight">Upload Target</h1>
-          <p className="text-white/40 text-sm mt-2">PDB file + inference settings</p>
+          <p className="text-white/40 text-sm mt-2">PDB file + sample count</p>
         </div>
 
         <div
@@ -145,59 +122,6 @@ export default function Upload() {
               disabled={isBusy}
               className="w-full rounded-xl border border-white/10 bg-[#070b14] px-3 py-3 text-sm text-white outline-none focus:border-blue-400/60"
             />
-          </label>
-
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-              Trajectory stride
-            </span>
-            <input
-              type="number"
-              min="1"
-              max="100"
-              value={trajectoryStride}
-              onChange={(event) => setTrajectoryStride(event.target.value)}
-              disabled={isBusy || !returnTrajectory}
-              className="w-full rounded-xl border border-white/10 bg-[#070b14] px-3 py-3 text-sm text-white outline-none focus:border-blue-400/60 disabled:opacity-40"
-            />
-          </label>
-
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-              Box center
-            </span>
-            <input
-              type="text"
-              value={boxCenterInput}
-              onChange={(event) => setBoxCenterInput(event.target.value)}
-              disabled={isBusy}
-              placeholder="x, y, z"
-              className="w-full rounded-xl border border-white/10 bg-[#070b14] px-3 py-3 text-sm text-white outline-none focus:border-blue-400/60"
-            />
-          </label>
-
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-              Box size
-            </span>
-            <input
-              type="text"
-              value={boxSizeInput}
-              onChange={(event) => setBoxSizeInput(event.target.value)}
-              disabled={isBusy}
-              placeholder="sx, sy, sz"
-              className="w-full rounded-xl border border-white/10 bg-[#070b14] px-3 py-3 text-sm text-white outline-none focus:border-blue-400/60"
-            />
-          </label>
-
-          <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#070b14] px-3 py-3 text-sm text-white">
-            <input
-              type="checkbox"
-              checked={returnTrajectory}
-              onChange={(event) => setReturnTrajectory(event.target.checked)}
-              disabled={isBusy}
-            />
-            <span>Return trajectory</span>
           </label>
         </div>
 

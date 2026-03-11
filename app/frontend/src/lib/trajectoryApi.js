@@ -39,33 +39,16 @@ function normalizeSample(row) {
   }
 }
 
-function requireVec3(value, label) {
-  if (!Array.isArray(value) || value.length !== 3) {
-    throw new Error(`${label} must be an array of length 3`)
-  }
-  const nums = value.map((x) => Number(x))
-  if (nums.some((x) => !Number.isFinite(x))) {
-    throw new Error(`${label} must contain finite numbers`)
-  }
-  return nums
-}
-
 export async function uploadTarget(file, options = {}) {
   const {
     samplesPerTarget = 8,
-    returnTrajectory = true,
-    trajectoryStride = 10,
-    boxCenter = [0, 0, 0],
-    boxSize = [24, 24, 24],
   } = options
 
   const formData = new FormData()
   formData.append('file', file)
   formData.append('samples_per_target', String(samplesPerTarget))
-  formData.append('return_trajectory', String(returnTrajectory))
-  formData.append('trajectory_stride', String(trajectoryStride))
-  formData.append('box_center', JSON.stringify(requireVec3(boxCenter, 'boxCenter')))
-  formData.append('box_size', JSON.stringify(requireVec3(boxSize, 'boxSize')))
+  formData.append('return_trajectory', 'true')
+  formData.append('trajectory_stride', '1')
 
   const response = await fetch(buildApiUrl('/api/inference'), {
     method: 'POST',

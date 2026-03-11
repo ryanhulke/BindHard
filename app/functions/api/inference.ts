@@ -10,6 +10,7 @@ type ModalTrajectoryFrame = {
   t: number
   ligand_pos: number[][]
   ligand_type: number[]
+  ligand_atomic_nums: number[]
   bonds: ModalBond[]
 }
 
@@ -74,19 +75,77 @@ function parseBoolField(value: FormDataEntryValue | null, fallback: boolean): bo
   throw new Error("boolean field must be one of true/false/1/0/yes/no/on/off")
 }
 
-function parseVec3Field(value: FormDataEntryValue | null, name: string): [number, number, number] {
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new Error(`missing ${name}`)
+function inferElementFromAtomName(atomName: string): string {
+  const letters = atomName.replace(/[^A-Za-z]/g, "").toUpperCase()
+  if (!letters) {
+    return ""
   }
-  const parsed = JSON.parse(value)
-  if (!Array.isArray(parsed) || parsed.length !== 3) {
-    throw new Error(`${name} must be a JSON array of length 3`)
+  if (letters.startsWith("SE")) {
+    return "SE"
   }
-  const nums = parsed.map((x) => Number(x))
-  if (nums.some((x) => !Number.isFinite(x))) {
-    throw new Error(`${name} must contain finite numbers`)
+  return letters[0]
+}
+
+function computeBoxFromPdbText(pdbText: string): {
+  center: [number, number, number]
+  size: [number, number, number]
+} {
+  const mins = [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY]
+  const maxs = [Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY]
+  let atomCount = 0
+
+  for (const rawLine of pdbText.split(/\r?\n/)) {
+    const line = rawLine.replace(/\r$/, "")
+    const record = line.slice(0, 6).trim().toUpperCase()
+
+    if (record !== "ATOM") {
+      continue
+    }
+    if (line.length < 54) {
+      continue
+    }
+
+    const altLoc = line.slice(16, 17).trim().toUpperCase()
+    if (altLoc !== "" && altLoc !== "A") {
+      continue
+    }
+
+    const atomName = line.slice(12, 16).trim()
+    const elementField = line.length >= 78 ? line.slice(76, 78).trim().toUpperCase() : ""
+    const element = elementField || inferElementFromAtomName(atomName)
+    if (element === "H") {
+      continue
+    }
+
+    const coords = [
+      Number.parseFloat(line.slice(30, 38).trim()),
+      Number.parseFloat(line.slice(38, 46).trim()),
+      Number.parseFloat(line.slice(46, 54).trim()),
+    ]
+
+    if (coords.some((value) => !Number.isFinite(value))) {
+      continue
+    }
+
+    atomCount += 1
+    for (let i = 0; i < 3; i += 1) {
+      mins[i] = Math.min(mins[i], coords[i])
+      maxs[i] = Math.max(maxs[i], coords[i])
+    }
   }
-  return [nums[0], nums[1], nums[2]]
+
+  if (atomCount === 0) {
+    throw new Error("uploaded file does not contain any usable ATOM coordinates")
+  }
+
+  const center = mins.map((minValue, i) => (minValue + maxs[i]) / 2) as [number, number, number]
+  const size = mins.map((minValue, i) => Math.max(22, maxs[i] - minValue + 12)) as [
+    number,
+    number,
+    number,
+  ]
+
+  return { center, size }
 }
 
 async function sha256Hex(bytes: ArrayBuffer): Promise<string> {
@@ -121,8 +180,6 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
     const samplesPerTarget = parseIntField(form.get("samples_per_target"), 8, 1, 64)
     const returnTrajectory = parseBoolField(form.get("return_trajectory"), false)
     const trajectoryStride = parseIntField(form.get("trajectory_stride"), 1, 1, 100)
-    const boxCenter = parseVec3Field(form.get("box_center"), "box_center")
-    const boxSize = parseVec3Field(form.get("box_size"), "box_size")
 
     const filename = filePart.name || "uploaded.pdb"
     if (!filename.toLowerCase().endsWith(".pdb")) {
@@ -139,6 +196,7 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
       return jsonResponse({ error: "uploaded file does not look like a protein PDB" }, 400)
     }
 
+    const { center: boxCenter, size: boxSize } = computeBoxFromPdbText(pdbText)
     const pdbSha256 = await sha256Hex(fileBytes)
     const now = Date.now()
     jobId = crypto.randomUUID()
@@ -158,7 +216,7 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
          created_at,
          started_at
        )
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         jobId,
@@ -191,8 +249,6 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
         samples_per_target: samplesPerTarget,
         return_trajectory: returnTrajectory,
         trajectory_stride: trajectoryStride,
-        box_center: boxCenter,
-        box_size: boxSize,
       }),
     })
 
@@ -225,7 +281,7 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
            created_at,
            updated_at
          )
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
         .bind(
           crypto.randomUUID(),
