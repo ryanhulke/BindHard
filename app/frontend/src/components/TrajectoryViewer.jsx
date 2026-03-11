@@ -303,6 +303,7 @@ export default function TrajectoryViewer({
   const bondFramesByIndexRef = useRef(new Map())
   const activeBlobUrlRef = useRef('')
   const sampleRef = useRef(sample)
+  const frameIndexRef = useRef(frameIndex)
   const onFrameAppliedRef = useRef(onFrameApplied)
   const onLoadCompleteRef = useRef(onLoadComplete)
   const onLoadErrorRef = useRef(onLoadError)
@@ -314,6 +315,10 @@ export default function TrajectoryViewer({
   useEffect(() => {
     sampleRef.current = sample
   }, [sample])
+
+  useEffect(() => {
+    frameIndexRef.current = frameIndex
+  }, [frameIndex])
 
   useEffect(() => {
     onFrameAppliedRef.current = onFrameApplied
@@ -671,7 +676,8 @@ export default function TrajectoryViewer({
 
         if (cancelled || loadToken !== loadTokenRef.current) return
 
-        await setFrame(0)
+        const initialFrameIndex = Math.max(0, Math.min(loadedFrameCount - 1, Number(frameIndexRef.current || 0)))
+        await setFrame(initialFrameIndex)
         onLoadCompleteRef.current?.({ frameCount: loadedFrameCount })
       } catch (error) {
         if (cancelled) return
