@@ -1,0 +1,7 @@
+modal
+fastapi
+pydantic>=2,<3
+pyyaml
+rdkit
+vina
+openbabel-wheel
