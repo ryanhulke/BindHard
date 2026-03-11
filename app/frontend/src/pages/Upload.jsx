@@ -64,7 +64,7 @@ export default function Upload() {
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#080a0f' }}>
       <div className="w-full max-w-lg px-6">
         <div className="text-center mb-10">
-          <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase mb-3">GenBind</p>
+          <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase mb-3">Bind Hard</p>
           <h1 className="text-white text-4xl font-bold tracking-tight">Upload Target</h1>
           <p className="text-white/40 text-sm mt-2">PDB file + sample count</p>
         </div>
