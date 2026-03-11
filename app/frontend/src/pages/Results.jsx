@@ -16,7 +16,6 @@ export default function Results() {
   const [searchParams] = useSearchParams()
   const outletContext = useOutletContext() || {}
   const viewerMode = outletContext.viewerMode || 'molstar'
-  const isVideoMode = viewerMode === 'video'
   const isMetricsMode = viewerMode === 'metrics'
   const isMolstarMode = viewerMode === 'molstar'
 
@@ -409,13 +408,7 @@ export default function Results() {
 
           <div className="h-[calc(100%-1.4rem)]">
             {selectedSample ? (
-              isVideoMode ? (
-                <div className="flex h-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.02]">
-                  <p className="text-sm text-white/45">
-                    Video mode is not available for live job results.
-                  </p>
-                </div>
-              ) : isMetricsMode ? (
+              isMetricsMode ? (
                 <MetricsPanel entry={selectedSample} />
               ) : selectedSample.status === 'completed' && proteinPdbText ? (
                 <TrajectoryViewer

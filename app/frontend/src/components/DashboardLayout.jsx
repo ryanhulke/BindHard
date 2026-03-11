@@ -4,14 +4,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 const VIEWER_MODES = [
   { id: "molstar", label: "Mol*" },
   { id: "metrics", label: "Metrics" },
-  { id: "video", label: "Video" },
 ];
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const [viewerMode, setViewerMode] = useState("molstar");
   const activeIndex = VIEWER_MODES.findIndex((mode) => mode.id === viewerMode);
-  const translateClassByIndex = ["translate-x-0", "translate-x-[70px]", "translate-x-[140px]"];
+  const translateClassByIndex = ["translate-x-0", "translate-x-[70px]"];
 
   return (
     <div className="min-h-screen" style={{ background: "#080a0f" }}>
@@ -38,14 +37,14 @@ export default function DashboardLayout() {
             <div
               role="tablist"
               aria-label="Viewer mode"
-              className="relative h-7 w-[210px] rounded-full border border-white/15 bg-white/5"
+              className="relative h-7 w-[140px] rounded-full border border-white/15 bg-white/5"
             >
               <span
                 className={`pointer-events-none absolute left-0.5 top-0.5 h-6 w-[68px] rounded-full bg-blue-500/90 transition-transform ${
                   translateClassByIndex[Math.max(0, activeIndex)] || "translate-x-0"
                 }`}
               />
-              <div className="relative z-10 grid h-full grid-cols-3">
+              <div className="relative z-10 grid h-full grid-cols-2">
                 {VIEWER_MODES.map((mode) => {
                   const isActive = viewerMode === mode.id;
                   return (
