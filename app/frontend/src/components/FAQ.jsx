@@ -5,19 +5,19 @@ import { PiStarFourBold } from "react-icons/pi";
 const FAQ_DATA = [
   {
     q: "What input data does Bind Hard need?",
-    a: "A single PDB file containing your target protein structure. Upload it through the dashboard and the platform will match it against precomputed binding trajectories to identify candidate binders and their predicted 3D conformations.",
+    a: "A single PDB file containing your target protein pocket's structure. Upload it through the dashboard and the platform will match it against precomputed binding trajectories to identify candidate binders and their predicted 3D conformations.",
   },
   {
     q: "How does the binding prediction work?",
-    a: "Bind Hard uses a flow matching and diffusion model built on an equivariant graph neural network (EGNN). Given a target protein, the model generates candidate small molecules or peptide binders by learning the distribution of binding conformations from a large dataset of known protein-ligand complexes — no hand-crafted docking rules required.",
+    a: "Bind Hard uses a flow matching model built on an equivariant graph neural network (EGNN). Given a target protein, the model generates candidate small-molecule binders by learning the distribution of binding conformations from a large dataset of known protein-ligand complexes.",
   },
   {
     q: "What does the trajectory viewer show?",
-    a: "It renders the full binding trajectory — the sequence of 3D conformations the candidate binder explores as it docks into the target's binding site. You can scrub frame-by-frame or play it as an animation. Switch to Video mode in the top bar to watch a pre-rendered MP4 of the same trajectory.",
+    a: "It renders the full binding trajectory — the sequence of 3D conformations the candidate binder explores as it docks into the target's binding site. You can scrub frame-by-frame or play it as an animation.",
   },
   {
     q: "How are candidates ranked?",
-    a: "Candidate binders are sorted by their Vina docking score (lower is better), which estimates binding affinity in kcal/mol. Samples without a Vina score are listed after scored ones, sorted by sample index.",
+    a: "Candidate binders are sorted by their Vina docking score (lower is better), which estimates binding affinity in kcal/mol.",
   },
   {
     q: "Can I use this for drug discovery?",
