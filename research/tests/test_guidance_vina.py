@@ -11,7 +11,7 @@ from datamodules import CrossDockedDataModule
 from common import DEFAULT_GUIDANCE_TARGET, vina_score_metadata
 from model.egnn import EGNN
 from model.sampling_guidance import PocketAffinityGuidance
-from scripts.train_guidance import eval_epoch, train_epoch
+from scripts.train_guidance import compute_guidance_loss, eval_epoch, train_epoch
 from common import score_bound_pose
 from reconstruct_molecule import build_reference_mol
 
@@ -188,15 +188,53 @@ def test_guidance_train_epoch_runs_with_vina_score_labels(tmp_path: Path) -> Non
         use_amp=False,
         amp_dtype=torch.float32,
         grad_clip=cfg.grad_clip,
+        guidance_loss=cfg.guidance_loss,
+        mask_positive_labels=cfg.mask_positive_guidance_labels,
     )
     val_stats = eval_epoch(
         model,
         dm.val_dataloader(),
         device,
         target_name=cfg.guidance_target,
+        guidance_loss=cfg.guidance_loss,
+        mask_positive_labels=cfg.mask_positive_guidance_labels,
     )
 
     assert train_stats["n"] == 1
     assert val_stats["n"] == 1
     assert math.isfinite(train_stats["loss"])
     assert math.isfinite(val_stats["loss"])
+
+
+def test_compute_guidance_loss_masks_positive_vina_labels() -> None:
+    class ConstantGuidance(torch.nn.Module):
+        def forward(self, batch, protein_pos, ligand_pos, ligand_type):
+            return torch.tensor([-2.0, 3.0], dtype=torch.float32)
+
+    batch = {
+        "protein_pos": torch.zeros((2, 1, 3), dtype=torch.float32).reshape(2, 3),
+        "ligand_pos": torch.zeros((2, 3), dtype=torch.float32),
+        "ligand_type": torch.zeros((2,), dtype=torch.long),
+        DEFAULT_GUIDANCE_TARGET: torch.tensor([-4.0, 2.5], dtype=torch.float32),
+    }
+    model = ConstantGuidance()
+
+    loss_masked, _, _ = compute_guidance_loss(
+        model,
+        batch,
+        target_name=DEFAULT_GUIDANCE_TARGET,
+        loss_scale=1.0,
+        guidance_loss="mse",
+        mask_positive_labels=True,
+    )
+    loss_unmasked, _, _ = compute_guidance_loss(
+        model,
+        batch,
+        target_name=DEFAULT_GUIDANCE_TARGET,
+        loss_scale=1.0,
+        guidance_loss="mse",
+        mask_positive_labels=False,
+    )
+
+    assert loss_masked.item() == pytest.approx(4.0)
+    assert loss_unmasked.item() > loss_masked.item()

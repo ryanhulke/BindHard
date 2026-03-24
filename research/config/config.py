@@ -78,6 +78,8 @@ class GuidanceConfig(BaseConfig):
     guidance_target: str = "vina_score"
     guidance_label_path: str = "data/crossdocked_vina_score_labels.jsonl"
     guidance_lower_is_better: bool = True
+    guidance_loss: str = "mse"
+    mask_positive_guidance_labels: bool = True
 
     # train params
     batch_size: int = 16

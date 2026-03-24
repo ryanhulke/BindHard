@@ -15,3 +15,5 @@ num_types: 7
 guidance_target: "vina_score"
 guidance_label_path: "data/crossdocked_vina_score_labels.jsonl"
 guidance_lower_is_better: true
+guidance_loss: "mse"
+mask_positive_guidance_labels: true

@@ -353,12 +353,14 @@ class LigandFlowMatching(torch.nn.Module):
             objective = -score.sum() if guidance_lower_is_better else score.sum()
             grad = torch.autograd.grad(objective, pos_in, allow_unused=False)[0]
 
-        if guidance_clip > 0:
-            grad_norm = grad.norm(dim=-1, keepdim=True).clamp_min(1e-8)
-            scale = (guidance_clip / grad_norm).clamp_max(1.0)
-            grad = grad * scale
+        step = (guidance_scale * dt) * grad
 
-        return (ligand_pos + (guidance_scale * dt) * grad).detach()
+        if guidance_clip > 0:
+            step_norm = step.norm(dim=-1, keepdim=True).clamp_min(1e-8)
+            scale = (guidance_clip / step_norm).clamp_max(1.0)
+            step = step * scale
+
+        return (ligand_pos - step).detach()
 
     def sample(
         self,

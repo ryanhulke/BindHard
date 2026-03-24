@@ -772,7 +772,8 @@ class LigandGenerator:
         amp = self.device.type == "cuda"
         amp_dtype = torch.bfloat16 if amp else torch.float32
 
-        inference_ctx = contextlib.nullcontext() if self.guidance_model is not None and self.cfg.guidance_scale > 0 else torch.inference_mode()
+        guidance_enabled = self.guidance_model is not None and self.cfg.guidance_scale > 0
+        inference_ctx = contextlib.nullcontext() if guidance_enabled else torch.inference_mode()
         with inference_ctx, torch.autocast(
             device_type=self.device.type,
             dtype=amp_dtype,

@@ -24,6 +24,8 @@ def compute_guidance_loss(
     *,
     target_name: str,
     loss_scale: float,
+    guidance_loss: str = "mse",
+    mask_positive_labels: bool = False,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     if target_name not in batch:
         raise KeyError(f"guidance training requires {target_name!r} labels in the dataset")
@@ -35,8 +37,21 @@ def compute_guidance_loss(
         ligand_type=batch["ligand_type"].long(),
     )
     target = batch[target_name].float().view_as(pred)
-    mse = torch.nn.functional.mse_loss(pred, target)
-    return mse * loss_scale, pred, target
+    loss_name = str(guidance_loss).lower()
+    if loss_name == "mse":
+        per_sample = (pred - target).pow(2)
+    elif loss_name == "mae":
+        per_sample = (pred - target).abs()
+    else:
+        raise ValueError(f"unsupported guidance_loss: {guidance_loss!r}")
+
+    if mask_positive_labels:
+        valid_mask = (target <= 0).to(per_sample.dtype)
+        denom = valid_mask.sum().clamp_min(1.0)
+        loss = (per_sample * valid_mask).sum() / denom
+    else:
+        loss = per_sample.mean()
+    return loss * loss_scale, pred, target
 
 
 @torch.no_grad()
@@ -46,6 +61,8 @@ def eval_epoch(
     device: torch.device,
     *,
     target_name: str,
+    guidance_loss: str = "mse",
+    mask_positive_labels: bool = False,
 ) -> dict[str, float | int]:
     model.eval()
     loss_sum = 0.0
@@ -58,6 +75,8 @@ def eval_epoch(
             batch,
             target_name=target_name,
             loss_scale=1.0,
+            guidance_loss=guidance_loss,
+            mask_positive_labels=mask_positive_labels,
         )
         bsz = int(batch["protein_counts"].numel())
         loss_sum += float(loss.item()) * bsz
@@ -77,6 +96,8 @@ def train_epoch(
     use_amp: bool,
     amp_dtype: torch.dtype,
     grad_clip: float,
+    guidance_loss: str = "mse",
+    mask_positive_labels: bool = False,
 ) -> dict[str, float | int]:
     model.train()
     loss_sum = 0.0
@@ -93,6 +114,8 @@ def train_epoch(
                 batch,
                 target_name=target_name,
                 loss_scale=target_loss_scale,
+                guidance_loss=guidance_loss,
+                mask_positive_labels=mask_positive_labels,
             )
 
         loss.backward()
@@ -160,6 +183,8 @@ def train() -> None:
                     batch,
                     target_name=cfg.guidance_target,
                     loss_scale=cfg.target_loss_scale,
+                    guidance_loss=cfg.guidance_loss,
+                    mask_positive_labels=cfg.mask_positive_guidance_labels,
                 )
 
             loss.backward()
@@ -172,7 +197,14 @@ def train() -> None:
             train_loss += float(loss.item()) * bsz
             wandb.log({"train/loss": float(loss.item()), "epoch": epoch, "seen": seen}, step=seen)
 
-        val = eval_epoch(model, dm.val_dataloader(), device, target_name=cfg.guidance_target)
+        val = eval_epoch(
+            model,
+            dm.val_dataloader(),
+            device,
+            target_name=cfg.guidance_target,
+            guidance_loss=cfg.guidance_loss,
+            mask_positive_labels=cfg.mask_positive_guidance_labels,
+        )
         wandb.log(
             {
                 "train/epoch_loss": train_loss / max(1, epoch_seen),

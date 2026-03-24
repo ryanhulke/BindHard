@@ -9,6 +9,16 @@ class IdentityDenoiser(torch.nn.Module):
         return {"h": h, "x": x}
 
 
+class LinearGuidance(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.calls = 0
+
+    def forward(self, batch, protein_pos, ligand_pos, ligand_type):
+        self.calls += 1
+        return ligand_pos[:, 0]
+
+
 def _toy_batch() -> dict[str, torch.Tensor]:
     ligand_bond_index = torch.tensor(
         [[0, 1, 1, 2], [1, 0, 2, 1]],
@@ -78,6 +88,65 @@ def test_flow_matching_sample_emits_graph_outputs() -> None:
     assert sample["ligand_charge"].shape[0] == sample["ligand_pos"].shape[0]
     assert sample["ligand_bond_index"].shape[0] == 2
     assert sample["ligand_bond_type"].ndim == 1
+
+
+def test_direct_guidance_lowers_linear_score() -> None:
+    model = LigandFlowMatching(
+        denoiser=IdentityDenoiser(),
+        num_types=7,
+        hidden_dim=32,
+        steps=4,
+        max_ligand_atoms=16,
+    )
+    batch = _toy_batch()
+    guidance_model = LinearGuidance()
+    ligand_pos = torch.tensor([[1.0, 0.0, 0.0]], dtype=torch.float32)
+    ligand_type = torch.tensor([0], dtype=torch.long)
+
+    moved = model._apply_guidance(
+        guidance_model=guidance_model,
+        batch_ctx=batch,
+        protein_pos=batch["protein_pos"].float(),
+        ligand_pos=ligand_pos,
+        ligand_type=ligand_type,
+        guidance_lower_is_better=True,
+        guidance_scale=1.0,
+        guidance_clip=0.0,
+        dt=0.5,
+    )
+
+    assert moved[0, 0].item() < ligand_pos[0, 0].item()
+
+
+def test_flow_matching_sample_activates_guidance_without_reference_target() -> None:
+    model = LigandFlowMatching(
+        denoiser=IdentityDenoiser(),
+        num_types=7,
+        hidden_dim=32,
+        steps=3,
+        max_ligand_atoms=16,
+    )
+    batch = _toy_batch()
+    protein_only = {
+        "protein_pos": batch["protein_pos"],
+        "protein_element": batch["protein_element"],
+        "protein_atom_to_aa_type": batch["protein_atom_to_aa_type"],
+        "protein_is_backbone": batch["protein_is_backbone"],
+        "protein_batch": batch["protein_batch"],
+    }
+    guidance_model = LinearGuidance()
+
+    sample = model.sample(
+        protein_only,
+        prior=None,
+        num_samples=1,
+        guidance_model=guidance_model,
+        guidance_scale=1.0,
+        guidance_clip=1.0,
+    )
+
+    assert guidance_model.calls > 0
+    assert sample["ligand_pos"].shape[-1] == 3
 
 
 def test_flow_matching_nft_loss_reports_finite_value() -> None:
