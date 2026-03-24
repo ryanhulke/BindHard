@@ -17,4 +17,8 @@ hidden_dim: 128
 num_layers: 9
 norm: true
 type_loss_scale: 1.0
+bond_loss_scale: 1.0
+charge_loss_scale: 0.5
+count_loss_scale: 0.5
+max_ligand_atoms: 64
 steps: 100

@@ -9,7 +9,7 @@
 
 ## slurm script to run inference on BindHard model
 
-cd /blue/yanjun.li/ryan.hulke/BindHard
+cd /blue/yanjun.li/ryan.hulke/BindHard/research
 
 pwd; hostname; date
 export XDG_RUNTIME_DIR=${SLURM_TMPDIR}
@@ -17,4 +17,4 @@ export XDG_RUNTIME_DIR=${SLURM_TMPDIR}
 module load conda
 conda activate bindhard
 
-python inference.py
+python -m scripts.test_set_inference

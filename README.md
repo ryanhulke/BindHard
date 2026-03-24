@@ -21,3 +21,6 @@
   
 #### Pocket extraction
 - right now, the user is required to do the preprocessing step of extracting the protein pocket and then upload that as input. We can automate this and allow them to just upload a whole target protein structure, and werun a pocket extraction algorithm/model as step 1 of the pipeline.
+
+#### Other
+- remove unnecessary computation and storage of boxes in `app/functions/api/inference.ts` - the boxes are computed properly in `app/backend/serve_inference.py`

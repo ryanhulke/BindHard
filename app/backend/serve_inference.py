@@ -5,6 +5,7 @@ import math
 import os
 import pickle
 import tempfile
+import contextlib
 from pathlib import Path
 from typing import Any
 
@@ -342,6 +343,105 @@ def build_ob_mol_from_geometry(
     return ob_mol
 
 
+def build_rdkit_mol_from_graph(
+    ligand_pos: Any,
+    ligand_type: Any,
+    atom_type_decoder: dict[int, Any],
+    ligand_bond_index: Any,
+    ligand_bond_type: Any,
+    ligand_charge: Any | None = None,
+) -> Chem.Mol:
+    if hasattr(ligand_pos, "detach"):
+        ligand_pos = ligand_pos.detach()
+    if hasattr(ligand_pos, "cpu"):
+        ligand_pos = ligand_pos.cpu()
+    if hasattr(ligand_pos, "tolist"):
+        ligand_pos = ligand_pos.tolist()
+
+    if hasattr(ligand_type, "detach"):
+        ligand_type = ligand_type.detach()
+    if hasattr(ligand_type, "cpu"):
+        ligand_type = ligand_type.cpu()
+    if hasattr(ligand_type, "tolist"):
+        ligand_type = ligand_type.tolist()
+
+    if hasattr(ligand_bond_index, "detach"):
+        ligand_bond_index = ligand_bond_index.detach()
+    if hasattr(ligand_bond_index, "cpu"):
+        ligand_bond_index = ligand_bond_index.cpu()
+    if hasattr(ligand_bond_index, "tolist"):
+        ligand_bond_index = ligand_bond_index.tolist()
+
+    if hasattr(ligand_bond_type, "detach"):
+        ligand_bond_type = ligand_bond_type.detach()
+    if hasattr(ligand_bond_type, "cpu"):
+        ligand_bond_type = ligand_bond_type.cpu()
+    if hasattr(ligand_bond_type, "tolist"):
+        ligand_bond_type = ligand_bond_type.tolist()
+
+    if ligand_charge is not None:
+        if hasattr(ligand_charge, "detach"):
+            ligand_charge = ligand_charge.detach()
+        if hasattr(ligand_charge, "cpu"):
+            ligand_charge = ligand_charge.cpu()
+        if hasattr(ligand_charge, "tolist"):
+            ligand_charge = ligand_charge.tolist()
+
+    coords = [list(row) for row in ligand_pos]
+    type_ids = [int(x) for x in ligand_type]
+    atom_numbers = [decode_atomic_num(type_id, atom_type_decoder) for type_id in type_ids]
+    charges = [int(x) for x in ligand_charge] if ligand_charge is not None else None
+
+    rw_mol = Chem.RWMol()
+    for atom_idx, atomic_num in enumerate(atom_numbers):
+        atom = Chem.Atom(int(atomic_num))
+        if charges is not None:
+            atom.SetFormalCharge(int(charges[atom_idx]))
+        rw_mol.AddAtom(atom)
+
+    seen: set[tuple[int, int]] = set()
+    aromatic_atoms: set[int] = set()
+    for edge_idx in range(len(ligand_bond_type)):
+        i = int(ligand_bond_index[0][edge_idx])
+        j = int(ligand_bond_index[1][edge_idx])
+        if i == j:
+            continue
+        a, b = (i, j) if i < j else (j, i)
+        if (a, b) in seen:
+            continue
+        seen.add((a, b))
+        rd_bond = {
+            1: Chem.BondType.SINGLE,
+            2: Chem.BondType.DOUBLE,
+            3: Chem.BondType.TRIPLE,
+            4: Chem.BondType.AROMATIC,
+        }.get(int(ligand_bond_type[edge_idx]))
+        if rd_bond is None:
+            raise ValueError(f"unknown bond type: {ligand_bond_type[edge_idx]}")
+        rw_mol.AddBond(a, b, rd_bond)
+        if rd_bond == Chem.BondType.AROMATIC:
+            aromatic_atoms.update((a, b))
+
+    mol = rw_mol.GetMol()
+    for atom_idx in aromatic_atoms:
+        mol.GetAtomWithIdx(atom_idx).SetIsAromatic(True)
+    for bond in mol.GetBonds():
+        if bond.GetBondType() == Chem.BondType.AROMATIC:
+            bond.SetIsAromatic(True)
+
+    conf = Chem.Conformer(len(coords))
+    for atom_idx, xyz in enumerate(coords):
+        conf.SetAtomPosition(atom_idx, (float(xyz[0]), float(xyz[1]), float(xyz[2])))
+    mol.RemoveAllConformers()
+    mol.AddConformer(conf, assignId=True)
+
+    try:
+        Chem.SanitizeMol(mol)
+    except Chem.rdchem.KekulizeException:
+        Chem.SanitizeMol(mol, Chem.SANITIZE_ALL ^ Chem.SANITIZE_KEKULIZE)
+    return mol
+
+
 def infer_bonds_from_geometry(
     ligand_pos: Any,
     ligand_type: Any,
@@ -373,7 +473,23 @@ def infer_mol_from_geometry(
     ligand_pos: Any,
     ligand_type: Any,
     atom_type_decoder: dict[int, Any],
+    ligand_bond_index: Any | None = None,
+    ligand_bond_type: Any | None = None,
+    ligand_charge: Any | None = None,
 ) -> Chem.Mol | None:
+    if ligand_bond_index is not None and ligand_bond_type is not None:
+        try:
+            return build_rdkit_mol_from_graph(
+                ligand_pos=ligand_pos,
+                ligand_type=ligand_type,
+                atom_type_decoder=atom_type_decoder,
+                ligand_bond_index=ligand_bond_index,
+                ligand_bond_type=ligand_bond_type,
+                ligand_charge=ligand_charge,
+            )
+        except Exception:
+            pass
+
     ob_mol = build_ob_mol_from_geometry(
         ligand_pos=ligand_pos,
         ligand_type=ligand_type,
@@ -541,6 +657,7 @@ class LigandGenerator:
         from model.common import AtomCountPrior
         from model.egnn import EGNN
         from model.flow_matching import LigandFlowMatching
+        from model.guidance import PocketAffinityGuidance
 
         with Path(CONFIG_PATH).open("r", encoding="utf-8") as f:
             cfg = InferenceConfig(**yaml.safe_load(f))
@@ -564,6 +681,7 @@ class LigandGenerator:
             "hidden_dim": cfg.hidden_dim,
             "num_types": cfg.num_types,
             "steps": cfg.steps,
+            "max_ligand_atoms": cfg.max_ligand_atoms,
         }
         if hasattr(cfg, "type_loss_scale"):
             model_kwargs["type_loss_scale"] = cfg.type_loss_scale
@@ -573,22 +691,49 @@ class LigandGenerator:
         model = LigandFlowMatching(**model_kwargs).to(device)
 
         ckpt = torch.load(CHECKPOINT_PATH, map_location="cpu")
-        model.load_state_dict(ckpt["diffusion"], strict=True)
+        load_result = model.load_state_dict(ckpt["diffusion"], strict=False)
         model.eval()
-
-        if "prior" not in ckpt:
-            raise RuntimeError("checkpoint must include 'prior' for inference")
+        use_prior = any(key.startswith("count_head.") for key in load_result.missing_keys)
+        self.use_explicit_graph = not any(
+            key.startswith(("bond_head.", "charge_head."))
+            for key in load_result.missing_keys
+        )
+        if use_prior and "prior" not in ckpt:
+            raise RuntimeError("checkpoint must include 'prior' when learned atom-count weights are unavailable")
 
         self.cfg = cfg
         self.device = device
         self.model = model
-        self.prior = AtomCountPrior.from_state_dict(ckpt["prior"])
+        self.prior = AtomCountPrior.from_state_dict(ckpt["prior"]) if use_prior and "prior" in ckpt else None
         self.aa_to_index = load_aa_to_index()
         self.fpscores = load_sa_fpscores()
         self.atom_type_decoder = {
             i: int(z)
             for i, z in enumerate(DEFAULT_LIGAND_ELEMENTS[:cfg.num_types])
         }
+        self.guidance_model = None
+        if cfg.guidance_ckpt:
+            guidance_denoiser = EGNN(
+                num_layers=cfg.num_layers,
+                hidden_dim=cfg.hidden_dim,
+                edge_feat_dim=cfg.edge_feat_dim,
+                num_r_gaussian=cfg.num_r_gaussian,
+                message_passing_mode=cfg.message_passing_mode,
+                k=cfg.k,
+                cutoff_mode=cfg.cutoff_mode,
+                update_x=True,
+                norm=cfg.norm,
+            ).to(device)
+            guidance_model = PocketAffinityGuidance(
+                denoiser=guidance_denoiser,
+                num_types=cfg.num_types,
+                hidden_dim=cfg.hidden_dim,
+            ).to(device)
+            g_ckpt = torch.load(cfg.guidance_ckpt, map_location="cpu")
+            guidance_state = g_ckpt["guidance"] if "guidance" in g_ckpt else g_ckpt
+            guidance_model.load_state_dict(guidance_state, strict=True)
+            guidance_model.eval()
+            self.guidance_model = guidance_model
 
     @modal.fastapi_endpoint(method="POST")
     def generate(
@@ -627,7 +772,8 @@ class LigandGenerator:
         amp = self.device.type == "cuda"
         amp_dtype = torch.bfloat16 if amp else torch.float32
 
-        with torch.inference_mode(), torch.autocast(
+        inference_ctx = contextlib.nullcontext() if self.guidance_model is not None and self.cfg.guidance_scale > 0 else torch.inference_mode()
+        with inference_ctx, torch.autocast(
             device_type=self.device.type,
             dtype=amp_dtype,
             enabled=amp,
@@ -638,11 +784,18 @@ class LigandGenerator:
                 num_samples=request.samples_per_target,
                 return_trajectory=request.return_trajectory,
                 trajectory_stride=request.trajectory_stride,
+                guidance_model=self.guidance_model,
+                guidance_lower_is_better=self.cfg.guidance_lower_is_better,
+                guidance_scale=self.cfg.guidance_scale,
+                guidance_clip=self.cfg.guidance_clip,
             )
 
         ligand_batch = sample["ligand_batch"].detach().cpu().long()
         ligand_pos = sample["ligand_pos"].detach().cpu() + protein_shift
         ligand_type = sample["ligand_type"].detach().cpu().long()
+        ligand_charge = sample["ligand_charge"].detach().cpu().long() if self.use_explicit_graph else None
+        ligand_bond_index = sample["ligand_bond_index"].detach().cpu().long() if self.use_explicit_graph else None
+        ligand_bond_type = sample["ligand_bond_type"].detach().cpu().long() if self.use_explicit_graph else None
         traj = sample.get("trajectory")
 
         receptor_pdbqt = protein_to_pdbqt_string(protein_raw_cpu)
@@ -667,6 +820,21 @@ class LigandGenerator:
                 lig_mask = ligand_batch == local_idx
                 sample_pos_tensor = ligand_pos[lig_mask]
                 sample_type_tensor = ligand_type[lig_mask]
+                sample_charge_tensor = None
+                sample_bond_index = None
+                sample_bond_type = None
+                if self.use_explicit_graph and ligand_charge is not None and ligand_bond_index is not None and ligand_bond_type is not None:
+                    sample_charge_tensor = ligand_charge[lig_mask]
+                    global_lig_idx = torch.where(lig_mask)[0]
+                    global_to_local = torch.full((ligand_batch.shape[0],), -1, dtype=torch.long)
+                    global_to_local[global_lig_idx] = torch.arange(global_lig_idx.shape[0], dtype=torch.long)
+                    bond_mask = torch.zeros((ligand_bond_type.shape[0],), dtype=torch.bool)
+                    if ligand_bond_index.numel() > 0:
+                        bond_mask = lig_mask[ligand_bond_index[0]] & lig_mask[ligand_bond_index[1]]
+                    sample_bond_index = ligand_bond_index[:, bond_mask]
+                    if sample_bond_index.numel() > 0:
+                        sample_bond_index = global_to_local[sample_bond_index]
+                    sample_bond_type = ligand_bond_type[bond_mask]
                 sample_atomic_nums = [
                     decode_atomic_num(int(type_id), self.atom_type_decoder)
                     for type_id in sample_type_tensor.tolist()
@@ -676,6 +844,9 @@ class LigandGenerator:
                         ligand_pos=sample_pos_tensor,
                         ligand_type=sample_type_tensor,
                         atom_type_decoder=self.atom_type_decoder,
+                        ligand_bond_index=sample_bond_index,
+                        ligand_bond_type=sample_bond_type,
+                        ligand_charge=sample_charge_tensor,
                     )
                     if not is_usable_mol(mol):
                         raise ValueError("invalid_rdkit_mol")

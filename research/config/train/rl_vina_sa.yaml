@@ -1,0 +1,37 @@
+run_name: "graphAttn_online_rl_vina_sa"
+base_ckpt: "checkpoints/best.pt"
+updates: 1000
+
+batch_size: 16
+rollout_batch_size: 4
+rollout_num_samples: 8
+num_inner_epochs: 1
+rollout_steps: 100
+rollout_time_schedule: "log"
+rollout_type_temperature: 0.01
+
+lr: 5.0e-6
+weight_decay: 0.0
+optimizer: "adam"
+grad_clip: 8.0
+log_every: 10
+
+nft_beta: 0.3
+nft_beta_discrete: 0.3
+ema_decay: 0.995
+
+reward_work_dir: "tmp_vina_online_rl"
+reward_vina_clip_low: -16.0
+reward_vina_clip_high: -1.0
+reward_vina_offset: 1.0
+reward_vina_divisor: 15.0
+reward_sa_shift: 0.17
+reward_sa_scale: 0.83
+reward_min_std: 1.0e-3
+
+message_passing_mode: "attention"
+hidden_dim: 128
+num_layers: 9
+norm: true
+num_types: 7
+steps: 100

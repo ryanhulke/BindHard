@@ -7,7 +7,7 @@
 #SBATCH --gpus=1
 #SBATCH --job-name=trainBH
 
-cd /blue/yanjun.li/ryan.hulke/BindHard
+cd /blue/yanjun.li/ryan.hulke/BindHard/research
 
 pwd; hostname; date
 export XDG_RUNTIME_DIR=${SLURM_TMPDIR}
@@ -15,4 +15,4 @@ export XDG_RUNTIME_DIR=${SLURM_TMPDIR}
 module load conda
 conda activate bindhard
 
-python train.py
+python -m scripts.train_generator
