@@ -30,9 +30,9 @@ class TrainConfig(BaseConfig):
     # diffusion params
     max_ligand_atoms: int = 64
     steps: int = 1000
-    type_loss_scale: float = 100.0
-    bond_loss_scale: float = 1.0
-    charge_loss_scale: float = 0.5
+    type_loss_scale: float = 4.0
+    bond_loss_scale: float = 8.0
+    charge_loss_scale: float = 1000.0
     count_loss_scale: float = 0.5
     protein_noise_std: float = 0.1
 
