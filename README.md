@@ -15,3 +15,9 @@
 ## TO-DO:
 #### Return n valid molecules
 - right now, the user requests n samples, but some % of generated samples are invalid. Instead of returning invalid samples, we can keep generating until we have n valid samples.
+#### RL fine-tuning
+- define reward function based on Vina + SA + QED + ???
+- implement PPO or another RL algorithm to fine-tune the model based on this reward function
+  
+#### Pocket extraction
+- right now, the user is required to do the preprocessing step of extracting the protein pocket and then upload that as input. We can automate this and allow them to just upload a whole target protein structure, and werun a pocket extraction algorithm/model as step 1 of the pipeline.

@@ -81,14 +81,13 @@ export default function WhatIsIt() {
           What is it?
         </h2>
         <p className="mt-6 max-w-2xl mx-auto text-white text-lg leading-relaxed">
-          Our protein binding tool is a generative AI framework that uses flow
-          matching and diffusion models to predict and design how biomolecules
+          Our protein binding tool is a generative AI framework that uses a flow
+          matching model to predict and design how biomolecules
           bind in 3D space. Given a target such as a protein structure or
           sequence, it models possible binding interactions, estimates how
           molecules fit within binding sites, and can generate candidate binders
-          for further screening. The goal is to help researchers explore
-          protein-ligand, protein-protein, and other biomolecular interactions
-          faster and more efficiently in the early stages of drug discovery
+          for further screening. The goal is to help researchers generate high quality candidates and explore
+          protein-ligand interactions faster and more efficiently in the early stages of drug discovery
         </p>
       </div>
 
@@ -110,13 +109,13 @@ export default function WhatIsIt() {
               step: "01",
               label: "Upload Target",
               detail:
-                "Start by uploading a protein structure or sequence into the platform",
+                "Start by uploading a protein pocket structure into the platform",
             },
             {
               step: "02",
               label: "Run the Model",
               detail:
-                "A flow matching and diffusion-powered EGNN predicts candidate binders and their 3D binding trajectories",
+                "A flow matching EGNN generates candidate small-molecule binders",
             },
             {
               step: "03",
@@ -126,15 +125,9 @@ export default function WhatIsIt() {
             },
             {
               step: "04",
-              label: "Render the Complex",
-              detail:
-                "Blender creates high-quality 3D visualizations of the generated protein-binding results",
-            },
-            {
-              step: "05",
               label: "View and Analyze",
               detail:
-                "Explore the predicted complex in an interactive interface for faster inspection and decision-making",
+                "Explore the predicted complex in an interactive interface for faster inspection",
             },
           ].map((s, i) => (
             <div
