@@ -5,9 +5,10 @@ import wandb
 from tqdm import tqdm
 
 from config.config import TrainConfig
-from research.datamodules import CrossDockedDataModule
+from datamodules import CrossDockedDataModule
 from model.flow_matching import LigandFlowMatching
 from model.egnn import EGNN
+from model.common import AtomCountPrior
 
 
 @torch.no_grad()
@@ -93,6 +94,12 @@ def train():
     ).to(device)
 
     optimizer = torch.optim.AdamW(ligand_diffusion.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay, fused=True)
+
+    if ckpt is not None and "prior" in ckpt:
+        prior_state = ckpt["prior"]
+    else:
+        prior = AtomCountPrior.fit(dm.ds_train, n_bins=10)
+        prior_state = prior.state_dict()
 
     amp = cfg.precision.lower()
     use_amp = (device.type == "cuda") and (amp in {"bf16", "fp16"})
@@ -181,6 +188,7 @@ def train():
                         "wandb_id": wandb_id,
                         "diffusion": ligand_diffusion.state_dict(),
                         "opt": optimizer.state_dict(),
+                        "prior": prior_state,
                         "cfg": cfg.__dict__,
                     },
                     best_path,
@@ -199,6 +207,7 @@ def train():
                 "wandb_id": wandb_id,
                 "diffusion": ligand_diffusion.state_dict(),
                 "opt": optimizer.state_dict(),
+                "prior": prior_state,
                 "cfg": cfg.__dict__,
             },
             last_path,

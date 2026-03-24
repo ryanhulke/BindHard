@@ -1,5 +1,5 @@
 run_name: "graphAttn_flow_matching"
-epochs: 300
+epochs: 400
 batch_size: 64
 num_workers: 4
 pin_memory: true
@@ -7,9 +7,10 @@ persistent_workers: true
 prefetch_factor: 2
 
 message_passing_mode: "attention" # mlp, attention
-resume: false
-# resume_ckpt: "checkpoints/7nogxr5q/paper_reproduction_last.pt"
+resume: true
+resume_ckpt: "checkpoints/wgwnxpac/graphAttn_flow_matching_last.pt"
 
+lr: 1.0e-4
 early_stop_patience: 200
 
 # model

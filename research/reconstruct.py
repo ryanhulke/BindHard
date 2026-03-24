@@ -105,6 +105,73 @@ def infer_mol_from_geometry(
     return rd_mol
 
 
+def build_reference_mol(reference: dict[str, Any]) -> Chem.Mol:
+    atom_types = reference["ligand_element"].detach().cpu().long().tolist()
+    bond_index = reference["ligand_bond_index"].detach().cpu().long()
+    bond_type = reference["ligand_bond_type"].detach().cpu().long().tolist()
+
+    rw_mol = Chem.RWMol()
+    for z in atom_types:
+        rw_mol.AddAtom(Chem.Atom(int(z)))
+
+    seen = set()
+    aromatic_atoms: set[int] = set()
+    for edge_idx in range(bond_index.shape[1]):
+        i = int(bond_index[0, edge_idx])
+        j = int(bond_index[1, edge_idx])
+        if i == j:
+            continue
+        a, b = (i, j) if i < j else (j, i)
+        if (a, b) in seen:
+            continue
+        seen.add((a, b))
+
+        rdkit_bond_type = {
+            1: Chem.BondType.SINGLE,
+            2: Chem.BondType.DOUBLE,
+            3: Chem.BondType.TRIPLE,
+            4: Chem.BondType.AROMATIC,
+        }.get(int(bond_type[edge_idx]))
+        if rdkit_bond_type is None:
+            raise ValueError(f"unknown bond type: {bond_type[edge_idx]}")
+        rw_mol.AddBond(a, b, rdkit_bond_type)
+        if rdkit_bond_type == Chem.BondType.AROMATIC:
+            aromatic_atoms.update((a, b))
+
+    mol = rw_mol.GetMol()
+    for atom_idx in aromatic_atoms:
+        mol.GetAtomWithIdx(atom_idx).SetIsAromatic(True)
+    for bond in mol.GetBonds():
+        if bond.GetBondType() == Chem.BondType.AROMATIC:
+            bond.SetIsAromatic(True)
+
+    ligand_smiles = reference.get("ligand_smiles")
+    if isinstance(ligand_smiles, str) and ligand_smiles.strip():
+        template = Chem.MolFromSmiles(ligand_smiles)
+        if template is None:
+            raise ValueError(f"failed to parse ligand_smiles: {ligand_smiles}")
+        match = template.GetSubstructMatch(mol)
+        if not match:
+            raise ValueError(
+                "ligand_smiles graph does not match ligand tensors; "
+                f"ligand_smiles={ligand_smiles}"
+            )
+        mol = Chem.RenumberAtoms(template, list(match))
+
+    pos = reference["ligand_pos"].detach().cpu().float()
+    conf = Chem.Conformer(mol.GetNumAtoms())
+    for atom_idx, xyz in enumerate(pos.tolist()):
+        conf.SetAtomPosition(atom_idx, (float(xyz[0]), float(xyz[1]), float(xyz[2])))
+    mol.RemoveAllConformers()
+    mol.AddConformer(conf, assignId=True)
+
+    try:
+        Chem.SanitizeMol(mol)
+    except Chem.rdchem.KekulizeException:
+        Chem.SanitizeMol(mol, Chem.SANITIZE_ALL ^ Chem.SANITIZE_KEKULIZE)
+    return mol
+
+
 def build_sample(
     sample: dict[str, Any],
     atom_type_decoder: dict[int, Any],

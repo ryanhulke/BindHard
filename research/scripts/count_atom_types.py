@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1])) # so we can import datamodules from inside scripts/
-from research.datamodules import CrossDockedDataModule
+from datamodules import CrossDockedDataModule
 
 lmdb_path = os.path.abspath("data/crossdocked_v1.1_rmsd1.0_pocket10_processed_final.lmdb")
 split_path = os.path.abspath("data/crossdocked_pose_split_from_name_val1000.pt")

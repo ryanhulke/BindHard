@@ -15,56 +15,9 @@ from model.flow_matching import LigandFlowMatching
 from model.common import AtomCountPrior
 from model.egnn import EGNN
 from config.config import InferenceConfig
-from research.datamodules import CrossDockedDataModule
+from datamodules import CrossDockedDataModule
 
-from research.reconstruct import build_target
-
-
-def bond_type_from_int(value: int) -> Chem.BondType:
-    mapping = {
-        1: Chem.BondType.SINGLE,
-        2: Chem.BondType.DOUBLE,
-        3: Chem.BondType.TRIPLE,
-        4: Chem.BondType.AROMATIC,
-    }
-    if int(value) not in mapping:
-        raise ValueError(f"unknown bond type: {value}")
-    return mapping[int(value)]
-
-
-def build_reference_mol(reference: dict[str, Any]) -> Chem.Mol:
-    atom_types = reference["ligand_element"].detach().cpu().long().tolist()
-    pos = reference["ligand_pos"].detach().cpu().float()
-    bond_index = reference["ligand_bond_index"].detach().cpu().long()
-    bond_type = reference["ligand_bond_type"].detach().cpu().long().tolist()
-
-    rw_mol = Chem.RWMol()
-    for z in atom_types:
-        rw_mol.AddAtom(Chem.Atom(int(z)))
-
-    seen = set()
-    for edge_idx in range(bond_index.shape[1]):
-        i = int(bond_index[0, edge_idx])
-        j = int(bond_index[1, edge_idx])
-        if i == j:
-            continue
-        a, b = (i, j) if i < j else (j, i)
-        if (a, b) in seen:
-            continue
-        seen.add((a, b))
-        rw_mol.AddBond(a, b, bond_type_from_int(bond_type[edge_idx]))
-
-    mol = rw_mol.GetMol()
-    conf = Chem.Conformer(len(atom_types))
-    for i, xyz in enumerate(pos.tolist()):
-        conf.SetAtomPosition(i, (float(xyz[0]), float(xyz[1]), float(xyz[2])))
-    mol.RemoveAllConformers()
-    mol.AddConformer(conf, assignId=True)
-    try:
-        Chem.SanitizeMol(mol)
-    except Chem.rdchem.KekulizeException:
-        Chem.SanitizeMol(mol, Chem.SANITIZE_ALL ^ Chem.SANITIZE_KEKULIZE)
-    return mol
+from reconstruct import build_reference_mol, build_target
 
 
 def is_usable_mol(mol: Chem.Mol | None) -> bool:
@@ -265,6 +218,7 @@ def main():
         pin_memory=cfg.pin_memory,
         persistent_workers=cfg.persistent_workers,
         prefetch_factor=cfg.prefetch_factor,
+        return_text_fields=True,
     )
 
     denoiser = EGNN(
@@ -312,6 +266,7 @@ def main():
         "ligand_element",
         "ligand_bond_index",
         "ligand_bond_type",
+        "ligand_smiles",
         "affinity",
     ]
 
@@ -331,11 +286,21 @@ def main():
     all_recon = []
 
     for target_idx, batch in enumerate(tqdm(dm.test_dataloader(), desc="target")):
+        if int(batch["ligand_counts"].numel()) != 1:
+            raise ValueError(
+                "test_set_inference.py requires batch_size=1 so each target "
+                "contains a single protein-ligand complex"
+            )
+
         target_dir = out_dir / f"{target_idx:06d}"
         target_dir.mkdir(parents=True, exist_ok=True)
 
         protein_cpu = {k: batch[k].cpu() for k in protein_keys}
-        reference_cpu = {k: batch[k].cpu() for k in ref_keys if k in batch}
+        reference_cpu = {
+            k: (batch[k].cpu() if torch.is_tensor(batch[k]) else batch[k][0])
+            for k in ref_keys
+            if k in batch
+        }
 
         raw_target = {
             "target_idx": target_idx,

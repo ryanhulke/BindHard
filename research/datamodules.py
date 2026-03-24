@@ -127,10 +127,7 @@ class CrossDockedLMDBDataset(Dataset):
             out["ligand_center_of_mass"] = ex["ligand_center_of_mass"].float()
 
         if self.return_text_fields:
-            out["protein_molecule_name"] = ex.get("protein_molecule_name", None)
             out["ligand_smiles"] = ex.get("ligand_smiles", None)
-            out["protein_filename"] = ex.get("protein_filename", None)
-            out["ligand_filename"] = ex.get("ligand_filename", None)
 
         return out
 
@@ -153,6 +150,7 @@ def collate_crossdocked(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     ligand_atom_feature_list = []
     has_ligand_atom_feature = all(("ligand_atom_feature" in ex) for ex in batch)
+    has_ligand_smiles = all(("ligand_smiles" in ex) for ex in batch)
 
     keys = []
     protein_counts = []
@@ -218,6 +216,8 @@ def collate_crossdocked(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     if has_ligand_atom_feature:
         out["ligand_atom_feature"] = torch.cat(ligand_atom_feature_list, dim=0)
+    if has_ligand_smiles:
+        out["ligand_smiles"] = [ex["ligand_smiles"] for ex in batch]
 
     return out
 
