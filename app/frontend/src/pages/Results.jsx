@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useOutletContext, useSearchParams } from 'react-router-dom'
 
+import ExportPanel from '../components/ExportPanel'
 import MetricsPanel from '../components/MetricsPanel'
 import TrajectoryViewer from '../components/TrajectoryViewer'
+import { downloadSampleSdf } from '../lib/sdfExport'
 import { fetchJob, fetchSamples, sortSamplesByVina } from '../lib/trajectoryApi'
 
 function firstSelectableSample(samples) {
@@ -52,6 +54,21 @@ export default function Results() {
   const [frameIndex, setFrameIndex] = useState(0)
   const [viewerFrameCount, setViewerFrameCount] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
+
+  const [selectedForExport, setSelectedForExport] = useState(new Set())
+  const [exportFilters, setExportFilters] = useState({
+    validOnly: true, hasSmilesOnly: false, affinityMin: null, affinityMax: null, minAtoms: null,
+  })
+
+  const toggleExportSelect = useCallback((idx) => {
+    setSelectedForExport((prev) => {
+      const next = new Set(prev)
+      next.has(idx) ? next.delete(idx) : next.add(idx)
+      return next
+    })
+  }, [])
+
+  const proteinId = job?.filename?.replace(/\.pdb$/i, '') || ''
 
   const playbackFps = 20
   const sampleMenuRef = useRef(null)
@@ -312,14 +329,18 @@ export default function Results() {
                           : null
 
                       return (
-                        <li key={sample.sample_idx}>
+                        <li key={sample.sample_idx} className="flex items-center">
+                          <label className="flex items-center pl-3 cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                            <input type="checkbox" checked={selectedForExport.has(sampleIdx)}
+                              onChange={() => toggleExportSelect(sampleIdx)} className="accent-blue-500" />
+                          </label>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedSampleIdx(sampleIdx)
                               setIsSampleMenuOpen(false)
                             }}
-                            className={`w-full px-3 py-2 text-left text-sm transition-colors ${
+                            className={`flex-1 px-3 py-2 text-left text-sm transition-colors ${
                               isSelected
                                 ? 'bg-blue-500/25 text-blue-100'
                                 : 'text-white/85 hover:bg-white/10 hover:text-white'
@@ -327,7 +348,20 @@ export default function Results() {
                             role="option"
                             aria-selected={isSelected}
                           >
-                            <div>Sample {sampleIdx}</div>
+                            <div className="flex items-center justify-between">
+                              <span>Sample {sampleIdx}</span>
+                              <button
+                                type="button"
+                                title="Download .sdf"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  downloadSampleSdf(sample, { proteinId })
+                                }}
+                                className="ml-2 rounded px-1.5 py-0.5 text-[10px] font-semibold text-white/40 hover:bg-white/10 hover:text-white/80 transition-colors"
+                              >
+                                .sdf
+                              </button>
+                            </div>
                             {vinaText && <div className="text-[11px] opacity-70">{vinaText}</div>}
                           </button>
                         </li>
@@ -378,6 +412,29 @@ export default function Results() {
                   disabled={!canPlayback}
                 />
               </div>
+            </div>
+          )}
+
+          {selectedSample?.status === 'completed' && (
+            <div className="mt-5">
+              <button type="button" onClick={() => downloadSampleSdf(selectedSample, { proteinId })}
+                className="w-full rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-white/60 hover:border-white/25 hover:text-white transition-colors">
+                Save This Molecule (.sdf)
+              </button>
+            </div>
+          )}
+
+          {samples.length > 0 && (
+            <div className="mt-5">
+              <ExportPanel
+                samples={samples}
+                selected={selectedForExport}
+                onSelectAll={(ids) => setSelectedForExport(new Set(ids))}
+                onDeselectAll={() => setSelectedForExport(new Set())}
+                proteinId={proteinId}
+                filters={exportFilters}
+                onFiltersChange={setExportFilters}
+              />
             </div>
           )}
 
