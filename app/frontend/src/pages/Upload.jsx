@@ -52,6 +52,18 @@ export default function Upload() {
     return () => window.clearInterval(intervalId)
   }, [loading])
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.metaKey && e.key === 'Enter') {
+        e.preventDefault()
+        runModel()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [file, isBusy, resolvedSamplesPerTarget])
+
   const parsePdbMetadata = (pdbText) => {
     const chains = new Set()
     let atomCount = 0
@@ -296,13 +308,14 @@ export default function Upload() {
         <button
           onClick={runModel}
           disabled={!file || isBusy}
-          className="mt-6 w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-base font-bold text-white transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-30"
           style={{
             background: file ? '#196eff' : 'rgba(255,255,255,0.08)',
             boxShadow: file ? '0 8px 24px rgba(25,110,255,0.3)' : 'none',
           }}
         >
-          {stage === 'uploading' ? 'Generating...' : 'Generate Candidate Binders'}
+          <span>{stage === 'uploading' ? 'Generating...' : 'Generate Candidate Binders'}</span>
+          <kbd className="rounded border border-white/20 px-1 text-xs opacity-40">⌘↵</kbd>
         </button>
 
         {loading && (
