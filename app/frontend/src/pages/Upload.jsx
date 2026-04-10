@@ -132,7 +132,14 @@ export default function Upload() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#080a0f' }}>
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{
+        backgroundColor: '#080a0f',
+        backgroundImage: 'radial-gradient(circle, rgba(0,229,176,0.07) 1px, transparent 1px)',
+        backgroundSize: '28px 28px',
+      }}
+    >
       <div className="w-full max-w-lg px-6">
         <div className="mb-8 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
           {PIPELINE_STEPS.map((step) => (
