@@ -6,6 +6,7 @@ import { uploadTarget } from '../lib/trajectoryApi'
 
 export default function Upload() {
   const [file, setFile] = useState(null)
+  const [pdbMetadata, setPdbMetadata] = useState(null)
   const [dragging, setDragging] = useState(false)
   const [stage, setStage] = useState('idle')
   const [statusMessage, setStatusMessage] = useState('')
@@ -18,18 +19,44 @@ export default function Upload() {
 
   const isBusy = stage === 'uploading' || stage === 'done'
 
-  const handleFile = (nextFile) => {
+  const parsePdbMetadata = (pdbText) => {
+    const chains = new Set()
+    let atomCount = 0
+    let hetatmCount = 0
+
+    for (const line of pdbText.split('\n')) {
+      if (line.startsWith('ATOM')) {
+        atomCount += 1
+        const chainId = line[21]?.trim()
+        if (chainId) chains.add(chainId)
+      }
+
+      if (line.startsWith('HETATM')) {
+        hetatmCount += 1
+      }
+    }
+
+    return {
+      residueCount: atomCount,
+      chainCount: chains.size,
+      ligandCount: hetatmCount,
+    }
+  }
+
+  const handleFile = async (nextFile) => {
     if (!nextFile) return
+    const pdbText = await nextFile.text()
     setFile(nextFile)
+    setPdbMetadata(parsePdbMetadata(pdbText))
     setErrorMessage('')
     setStatusMessage('')
   }
 
-  const handleDrop = (event) => {
+  const handleDrop = async (event) => {
     event.preventDefault()
     setDragging(false)
     if (isBusy) return
-    handleFile(event.dataTransfer.files[0])
+    await handleFile(event.dataTransfer.files[0])
   }
 
   const runModel = async () => {
@@ -101,12 +128,25 @@ export default function Upload() {
             type="file"
             accept=".pdb"
             className="hidden"
-            onChange={(event) => handleFile(event.target.files[0])}
+            onChange={async (event) => handleFile(event.target.files[0])}
             disabled={isBusy}
           />
           {file ? (
             <>
               <p className="text-white font-semibold">{file.name}</p>
+              {pdbMetadata && (
+                <div className="flex flex-wrap justify-center gap-2">
+                  <span className="rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-teal-100">
+                    ATOM {pdbMetadata.residueCount}
+                  </span>
+                  <span className="rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-teal-100">
+                    Chains {pdbMetadata.chainCount}
+                  </span>
+                  <span className="rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-teal-100">
+                    HETATM {pdbMetadata.ligandCount}
+                  </span>
+                </div>
+              )}
               <p className="text-white/40 text-xs">
                 {(file.size / 1024).toFixed(1)} KB | click to change
               </p>
