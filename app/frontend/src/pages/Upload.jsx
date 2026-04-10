@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { AlertCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
@@ -13,6 +14,7 @@ export default function Upload() {
   const [stage, setStage] = useState('idle')
   const [statusMessage, setStatusMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [errorShakeKey, setErrorShakeKey] = useState(0)
 
   const [samplesPerTarget, setSamplesPerTarget] = useState(8)
   const [customSamples, setCustomSamples] = useState('')
@@ -56,6 +58,7 @@ export default function Upload() {
     setFile(nextFile)
     setPdbMetadata(parsePdbMetadata(pdbText))
     setErrorMessage('')
+    setErrorShakeKey(0)
     setStatusMessage('')
   }
 
@@ -70,6 +73,7 @@ export default function Upload() {
     if (!file || isBusy) return
 
     setErrorMessage('')
+    setErrorShakeKey(0)
     setStage('uploading')
     setStatusMessage('Uploading target and running generation...')
 
@@ -92,6 +96,7 @@ export default function Upload() {
       setStage('idle')
       setStatusMessage('')
       setErrorMessage(String(error?.message || error))
+      setErrorShakeKey((current) => current + 1)
     }
   }
 
@@ -241,9 +246,30 @@ export default function Upload() {
         )}
 
         {errorMessage && (
-          <div className="mt-4 rounded-lg border border-red-400/30 bg-red-900/25 px-3 py-2 text-xs text-red-100">
-            {errorMessage}
-          </div>
+          <motion.div
+            key={errorShakeKey}
+            className="mt-4 rounded-2xl border border-red-400/30 bg-red-950/30 p-4"
+            animate={{ x: [0, -8, 8, -8, 0] }}
+            transition={{ duration: 0.35 }}
+          >
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-red-100">Upload failed</p>
+                <p className="mt-1 text-sm leading-6 text-red-100/75">
+                  We couldn&apos;t process your target file right now. {errorMessage}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={runModel}
+                disabled={!file || isBusy}
+                className="rounded-xl border border-red-300/20 bg-red-300/10 px-3 py-2 text-sm font-semibold text-red-100 transition-colors duration-200 hover:bg-red-300/15 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Retry
+              </button>
+            </div>
+          </motion.div>
         )}
       </div>
     </div>

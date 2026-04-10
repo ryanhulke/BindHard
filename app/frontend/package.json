@@ -14,6 +14,7 @@
     "@tailwindcss/vite": "^4.2.0",
     "framer-motion": "^12.38.0",
     "gsap": "^3.14.2",
+    "lucide-react": "^1.8.0",
     "molstar": "^5.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
