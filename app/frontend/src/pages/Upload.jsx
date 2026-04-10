@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
@@ -69,8 +70,12 @@ export default function Upload() {
           <p className="text-white/40 text-sm mt-2">PDB file + sample count</p>
         </div>
 
-        <div
+        <motion.div
           onClick={() => !isBusy && inputRef.current?.click()}
+          onDragEnter={(event) => {
+            event.preventDefault()
+            if (!isBusy) setDragging(true)
+          }}
           onDragOver={(event) => {
             event.preventDefault()
             if (!isBusy) setDragging(true)
@@ -78,10 +83,16 @@ export default function Upload() {
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
           className="relative rounded-2xl border-2 border-dashed transition-all duration-200 p-12 flex flex-col items-center gap-4 text-center"
+          animate={{
+            borderColor: dragging ? 'rgba(45, 212, 191, 1)' : 'rgba(45, 212, 191, 0.32)',
+            boxShadow: dragging
+              ? '0 0 0 1px rgba(45, 212, 191, 0.95), 0 0 30px rgba(45, 212, 191, 0.28)'
+              : '0 0 0 1px rgba(45, 212, 191, 0.18), 0 0 0 rgba(45, 212, 191, 0)',
+          }}
+          transition={{ duration: 0.2 }}
           style={{
             cursor: isBusy ? 'not-allowed' : 'pointer',
-            borderColor: dragging ? '#196eff' : file ? '#22c55e' : 'rgba(255,255,255,0.12)',
-            background: dragging ? 'rgba(25,110,255,0.05)' : 'rgba(255,255,255,0.02)',
+            background: dragging ? 'rgba(45, 212, 191, 0.07)' : 'rgba(255,255,255,0.02)',
             opacity: isBusy ? 0.8 : 1,
           }}
         >
@@ -106,7 +117,7 @@ export default function Upload() {
               <p className="text-white/30 text-xs">or click to browse</p>
             </>
           )}
-        </div>
+        </motion.div>
 
         <div className="mt-6 grid grid-cols-1 gap-4">
           <label className="block">
