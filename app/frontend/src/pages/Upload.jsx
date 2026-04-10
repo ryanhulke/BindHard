@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
 
+const SAMPLE_OPTIONS = [4, 8, 16, 32]
+
 export default function Upload() {
   const [file, setFile] = useState(null)
   const [pdbMetadata, setPdbMetadata] = useState(null)
@@ -12,12 +14,17 @@ export default function Upload() {
   const [statusMessage, setStatusMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const [samplesPerTarget, setSamplesPerTarget] = useState('8')
+  const [samplesPerTarget, setSamplesPerTarget] = useState(8)
+  const [customSamples, setCustomSamples] = useState('')
 
   const inputRef = useRef(null)
   const navigate = useNavigate()
 
   const isBusy = stage === 'uploading' || stage === 'done'
+  const usingCustomSamples = !SAMPLE_OPTIONS.includes(samplesPerTarget)
+  const resolvedSamplesPerTarget = usingCustomSamples
+    ? Math.max(1, Math.min(64, Number(customSamples) || 8))
+    : samplesPerTarget
 
   const parsePdbMetadata = (pdbText) => {
     const chains = new Set()
@@ -68,7 +75,7 @@ export default function Upload() {
 
     try {
       const payload = await uploadTarget(file, {
-        samplesPerTarget: Number(samplesPerTarget),
+        samplesPerTarget: resolvedSamplesPerTarget,
       })
 
       const jobId = String(payload?.job_id || '')
@@ -164,15 +171,51 @@ export default function Upload() {
             <span className="mb-1 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
               Samples
             </span>
-            <input
-              type="number"
-              min="1"
-              max="64"
-              value={samplesPerTarget}
-              onChange={(event) => setSamplesPerTarget(event.target.value)}
-              disabled={isBusy}
-              className="w-full rounded-xl border border-white/10 bg-[#070b14] px-3 py-3 text-sm text-white outline-none focus:border-blue-400/60"
-            />
+            <div className="grid grid-cols-5 gap-2">
+              {SAMPLE_OPTIONS.map((option) => {
+                const isActive = samplesPerTarget === option
+
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setSamplesPerTarget(option)}
+                    disabled={isBusy}
+                    className={`rounded-xl border px-3 py-3 text-sm font-semibold transition-colors duration-200 ${
+                      isActive
+                        ? 'bg-teal-500/10 border-teal-500/50 text-teal-400'
+                        : 'bg-white/5 border-white/10 text-white/40'
+                    } disabled:cursor-not-allowed disabled:opacity-50`}
+                  >
+                    {option}
+                  </button>
+                )
+              })}
+              <button
+                type="button"
+                onClick={() => setSamplesPerTarget(0)}
+                disabled={isBusy}
+                className={`rounded-xl border px-3 py-3 text-sm font-semibold transition-colors duration-200 ${
+                  usingCustomSamples
+                    ? 'bg-teal-500/10 border-teal-500/50 text-teal-400'
+                    : 'bg-white/5 border-white/10 text-white/40'
+                } disabled:cursor-not-allowed disabled:opacity-50`}
+              >
+                Other
+              </button>
+            </div>
+            {usingCustomSamples && (
+              <input
+                type="number"
+                min="1"
+                max="64"
+                value={customSamples}
+                onChange={(event) => setCustomSamples(event.target.value)}
+                disabled={isBusy}
+                placeholder="Enter a value from 1 to 64"
+                className="mt-3 w-full rounded-xl border border-teal-500/30 bg-white/5 px-3 py-3 text-sm text-white outline-none placeholder:text-white/25 focus:border-teal-500/50"
+              />
+            )}
           </label>
         </div>
 
