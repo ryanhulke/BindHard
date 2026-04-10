@@ -1,17 +1,24 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
 
 const SAMPLE_OPTIONS = [4, 8, 16, 32]
+const LOADING_STEPS = [
+  'Preprocessing structure…',
+  'Running flow match…',
+  'Finalizing candidates…',
+]
 
 export default function Upload() {
   const [file, setFile] = useState(null)
   const [pdbMetadata, setPdbMetadata] = useState(null)
   const [dragging, setDragging] = useState(false)
   const [stage, setStage] = useState('idle')
+  const [loading, setLoading] = useState(false)
+  const [loadingStepIndex, setLoadingStepIndex] = useState(0)
   const [statusMessage, setStatusMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [errorShakeKey, setErrorShakeKey] = useState(0)
@@ -27,6 +34,17 @@ export default function Upload() {
   const resolvedSamplesPerTarget = usingCustomSamples
     ? Math.max(1, Math.min(64, Number(customSamples) || 8))
     : samplesPerTarget
+  const currentLoadingStep = LOADING_STEPS[loadingStepIndex] ?? LOADING_STEPS[0]
+
+  useEffect(() => {
+    if (!loading) return undefined
+
+    const intervalId = window.setInterval(() => {
+      setLoadingStepIndex((current) => (current + 1) % LOADING_STEPS.length)
+    }, 1800)
+
+    return () => window.clearInterval(intervalId)
+  }, [loading])
 
   const parsePdbMetadata = (pdbText) => {
     const chains = new Set()
@@ -57,6 +75,8 @@ export default function Upload() {
     const pdbText = await nextFile.text()
     setFile(nextFile)
     setPdbMetadata(parsePdbMetadata(pdbText))
+    setLoading(false)
+    setLoadingStepIndex(0)
     setErrorMessage('')
     setErrorShakeKey(0)
     setStatusMessage('')
@@ -75,6 +95,8 @@ export default function Upload() {
     setErrorMessage('')
     setErrorShakeKey(0)
     setStage('uploading')
+    setLoading(true)
+    setLoadingStepIndex(0)
     setStatusMessage('Uploading target and running generation...')
 
     try {
@@ -87,12 +109,15 @@ export default function Upload() {
         throw new Error('API did not return a job_id.')
       }
 
+      setLoading(false)
       setStage('done')
       setStatusMessage(`Generation complete. Redirecting to results for job ${jobId}...`)
 
       const search = new URLSearchParams({ job_id: jobId })
       window.setTimeout(() => navigate(`/dashboard/results?${search.toString()}`), 500)
     } catch (error) {
+      setLoading(false)
+      setLoadingStepIndex(0)
       setStage('idle')
       setStatusMessage('')
       setErrorMessage(String(error?.message || error))
@@ -236,7 +261,14 @@ export default function Upload() {
           {stage === 'uploading' ? 'Generating...' : 'Generate Candidate Binders'}
         </button>
 
-        {(stage === 'uploading' || stage === 'done') && (
+        {loading && (
+          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-white/70">
+            <Loader2 className="h-4 w-4 animate-spin text-teal-300" />
+            <p>{currentLoadingStep}</p>
+          </div>
+        )}
+
+        {(stage === 'done') && (
           <div
             className="mt-4 rounded-2xl border border-white/10 p-4"
             style={{ background: 'rgba(255,255,255,0.03)' }}
