@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Check, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
@@ -10,6 +10,12 @@ const LOADING_STEPS = [
   'Preprocessing structure…',
   'Running flow match…',
   'Finalizing candidates…',
+]
+const PIPELINE_STEPS = [
+  { label: 'Upload', status: 'active' },
+  { label: 'Configure', status: 'future' },
+  { label: 'Generate', status: 'future' },
+  { label: 'Results', status: 'future' },
 ]
 
 export default function Upload() {
@@ -128,6 +134,37 @@ export default function Upload() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#080a0f' }}>
       <div className="w-full max-w-lg px-6">
+        <div className="mb-8 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          {PIPELINE_STEPS.map((step) => (
+            <div key={step.label} className="flex min-w-0 flex-1 items-center gap-2">
+              <div
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
+                  step.status === 'completed'
+                    ? 'border-teal-400/70 bg-teal-400/15 text-teal-300'
+                    : step.status === 'active'
+                      ? 'border-teal-400/70 bg-teal-400 text-[#080a0f]'
+                      : 'border-white/20 bg-transparent text-white/30'
+                }`}
+              >
+                {step.status === 'completed' ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : step.status === 'active' ? (
+                  <span className="h-2.5 w-2.5 rounded-full bg-current" />
+                ) : (
+                  <span className="h-2.5 w-2.5 rounded-full border border-current" />
+                )}
+              </div>
+              <span
+                className={`truncate text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                  step.status === 'active' ? 'text-teal-300' : 'text-white/35'
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
         <div className="text-center mb-10">
           <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase mb-3">Bind Hard</p>
           <h1 className="text-white text-4xl font-bold tracking-tight">Upload Target</h1>
