@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView } from "framer-motion";
-import FlowMatching from "./FlowMatching";
+import FlowMatching from "../FlowMatching";
 
 // const FEATURES = [
 //   {
@@ -130,12 +130,13 @@ export default function WhatIsIt() {
         </h2>
         <p className="mt-6 max-w-2xl mx-auto text-white text-lg leading-relaxed">
           Our protein binding tool is a generative AI framework that uses a flow
-          matching model to predict and design how biomolecules
-          bind in 3D space. Given a target such as a protein structure or
-          sequence, it models possible binding interactions, estimates how
-          molecules fit within binding sites, and can generate candidate binders
-          for further screening. The goal is to help researchers generate high quality candidates and explore
-          protein-ligand interactions faster and more efficiently in the early stages of drug discovery
+          matching model to predict and design how biomolecules bind in 3D
+          space. Given a target such as a protein structure or sequence, it
+          models possible binding interactions, estimates how molecules fit
+          within binding sites, and can generate candidate binders for further
+          screening. The goal is to help researchers generate high quality
+          candidates and explore protein-ligand interactions faster and more
+          efficiently in the early stages of drug discovery
         </p>
       </div>
 
@@ -203,7 +204,9 @@ export default function WhatIsIt() {
           ))}
         </motion.div>
 
-        <FlowMatching />
+        <div className="mt-12">
+          <FlowMatching />
+        </div>
       </div>
     </section>
   );
