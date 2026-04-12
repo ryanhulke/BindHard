@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView } from "framer-motion";
+import FlowMatching from "./FlowMatching";
 
 // const FEATURES = [
 //   {
@@ -201,6 +202,8 @@ export default function WhatIsIt() {
             </motion.div>
           ))}
         </motion.div>
+
+        <FlowMatching />
       </div>
     </section>
   );
