@@ -5,15 +5,23 @@ import { IoIosWifi } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function Hero() {
   const navigate = useNavigate();
 
+  const heroRef = useRef(null);
   const titleRef = useRef(null);
   const btnRef = useRef(null);
   const windowRef = useRef(null);
   const macWinRef = useRef(null);
   const dockRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const proteinBackgroundY = useTransform(scrollYProgress, [0, 1], [0, -120]);
 
   useEffect(() => {
     const tl = gsap.timeline({
@@ -39,7 +47,10 @@ export default function Hero() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full flex flex-col items-center pt-28 px-6">
+    <div
+      ref={heroRef}
+      className="relative z-10 w-full flex flex-col items-center pt-28 px-6"
+    >
       {/* Title */}
       <div ref={titleRef} className="text-center mb-16">
         <h1 className="font-eb-garamond text-white text-6xl md:text-9xl font-bold mb-10 tracking-tight leading-none">
@@ -49,11 +60,13 @@ export default function Hero() {
         <button
           ref={btnRef}
           onClick={() => navigate("/dashboard")}
-          className="group hover:cursor-pointer relative inline-flex items-center gap-4 overflow-hidden rounded-2xl bg-[#196eff] px-10 py-5 font-semibold transition-all duration-300
+          className="hero-cta group hover:cursor-pointer relative inline-flex items-center gap-4 overflow-visible rounded-2xl bg-[#196eff] px-10 py-5 font-semibold transition-all duration-300
                     shadow-[0_12px_30px_rgba(0,0,0,0.35)]
                     hover:scale-[1.04] hover:shadow-[0_18px_45px_rgba(0,0,0,0.45)]
                     active:scale-[0.98]"
         >
+          <span className="hero-cta__ping" aria-hidden="true" />
+
           {/* 3D lighting (behind shimmer) */}
           <span className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/25 to-transparent opacity-70" />
           <span className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_-8px_14px_rgba(0,0,0,0.25)]" />
@@ -73,12 +86,17 @@ export default function Hero() {
       <div
         ref={windowRef}
         className="max-w-6xl w-full h-[750px] rounded-[14px] shadow-[0_0px_40px_20px_rgba(255,255,255,0.3)] relative overflow-hidden"
-        style={{
-          backgroundImage: "url('/background.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
       >
+        <motion.div
+          className="absolute -inset-y-16 inset-x-0"
+          style={{
+            y: proteinBackgroundY,
+            backgroundImage: "url('/background.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+
         {/* Top Bar */}
         <div className="absolute opacity-50 top-0 left-0 w-full h-9 bg-black/80 backdrop-blur-md flex items-center justify-between pl-4 pr-1">
           {/* Logo — far left */}
