@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { animate, motion, useInView } from "framer-motion";
 
 // const FEATURES = [
 //   {
@@ -64,6 +64,33 @@ function FeatureCard({ icon, title, desc, delay }) {
       </h3>
       <p className="text-white text-sm leading-relaxed">{desc}</p>
     </div>
+  );
+}
+
+function AnimatedStepNumber({ value, delay = 0 }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.7 });
+  const [displayValue, setDisplayValue] = useState("00");
+
+  useEffect(() => {
+    if (!isInView) return undefined;
+
+    const controls = animate(0, value, {
+      duration: 0.7,
+      delay,
+      ease: "easeOut",
+      onUpdate: (latest) => {
+        setDisplayValue(String(Math.round(latest)).padStart(2, "0"));
+      },
+    });
+
+    return () => controls.stop();
+  }, [delay, isInView, value]);
+
+  return (
+    <span ref={ref} className="text-white font-mono text-xs font-bold">
+      {displayValue}
+    </span>
   );
 }
 
@@ -164,9 +191,7 @@ export default function WhatIsIt() {
               {i > 0 && (
                 <div className="hidden md:block w-full h-px bg-gradient-to-r from-transparent via-white/15 to-transparent -mt-3 mb-3" />
               )}
-              <span className="text-white font-mono text-xs font-bold">
-                {s.step}
-              </span>
+              <AnimatedStepNumber value={i + 1} delay={i * 0.14} />
               <div>
                 <p className="text-white font-semibold text-sm">{s.label}</p>
                 <p className="text-white text-xs mt-0.5 leading-relaxed">
