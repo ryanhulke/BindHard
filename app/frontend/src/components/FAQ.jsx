@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { PiStarFourBold } from "react-icons/pi";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const FAQ_DATA = [
   {
@@ -25,73 +24,62 @@ const FAQ_DATA = [
   },
 ];
 
-function FaqItem({ q, a, index }) {
-  const [open, setOpen] = useState(false);
-  const contentRef = useRef(null);
-  const itemRef = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = itemRef.current;
-    if (!el) return;
-    const ob = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          ob.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-    ob.observe(el);
-    return () => ob.disconnect();
-  }, []);
-
+function FaqItem({ q, a, index, isOpen, onToggle }) {
   return (
-    <div
-      ref={itemRef}
+    <motion.div
       className="border-b border-white/8 transition-all duration-700"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transitionDelay: `${index * 60}ms`,
-      }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, ease: "easeOut", delay: index * 0.06 }}
     >
       <button
-        onClick={() => setOpen(!open)}
+        onClick={onToggle}
         className="w-full flex items-center justify-between py-6 text-left group cursor-pointer"
+        aria-expanded={isOpen}
       >
         <span className="text-white font-semibold text-base md:text-lg pr-8 group-hover:text-white transition-colors">
           {q}
         </span>
-        <span
-          className="text-white text-2xl transition-transform duration-300 shrink-0"
-          style={{ transform: open ? "rotate(45deg)" : "rotate(0)" }}
+        <motion.span
+          className="text-white text-2xl shrink-0"
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           +
-        </span>
+        </motion.span>
       </button>
-      <div
-        className="overflow-hidden transition-all duration-400 ease-in-out"
-        style={{
-          maxHeight: open
-            ? (contentRef.current?.scrollHeight ?? 500) + "px"
-            : "0px",
-        }}
-      >
-        <p
-          ref={contentRef}
-          className="text-white text-sm leading-relaxed pb-6 pr-12"
-        >
-          {a}
-        </p>
-      </div>
-    </div>
+      <AnimatePresence initial={false}>
+        {isOpen ? (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              height: { duration: 0.28, ease: "easeInOut" },
+              opacity: { duration: 0.2, ease: "easeOut" },
+            }}
+            className="overflow-hidden"
+          >
+            <motion.p
+              initial={{ y: -6 }}
+              animate={{ y: 0 }}
+              exit={{ y: -4 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="text-white text-sm leading-relaxed pb-6 pr-12"
+            >
+              {a}
+            </motion.p>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
 export default function FAQ() {
-  const navigate = useNavigate();
+  const [openIndex, setOpenIndex] = useState(0);
 
   return (
     <section
@@ -111,7 +99,14 @@ export default function FAQ() {
       {/* FAQ list */}
       <div>
         {FAQ_DATA.map((item, i) => (
-          <FaqItem key={i} q={item.q} a={item.a} index={i} />
+          <FaqItem
+            key={i}
+            q={item.q}
+            a={item.a}
+            index={i}
+            isOpen={openIndex === i}
+            onToggle={() => setOpenIndex((current) => (current === i ? -1 : i))}
+          />
         ))}
       </div>
     </section>
