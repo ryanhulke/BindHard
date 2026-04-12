@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 // const FEATURES = [
 //   {
@@ -67,6 +68,25 @@ function FeatureCard({ icon, title, desc, delay }) {
 }
 
 export default function WhatIsIt() {
+  const pipelineCardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: "easeOut" },
+    },
+  };
+
+  const pipelineContainerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.14,
+        delayChildren: 0.08,
+      },
+    },
+  };
+
   return (
     <section
       id="what"
@@ -103,7 +123,13 @@ export default function WhatIsIt() {
         <h3 className="text-white font-bold text-lg mb-4 tracking-tight text-center">
           How it works
         </h3>
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-0">
+        <motion.div
+          className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-0"
+          variants={pipelineContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+        >
           {[
             {
               step: "01",
@@ -130,9 +156,10 @@ export default function WhatIsIt() {
                 "Explore the predicted complex in an interactive interface for faster inspection",
             },
           ].map((s, i) => (
-            <div
+            <motion.div
               key={s.step}
               className="flex-1 flex items-start gap-3 md:flex-col md:items-center md:text-center"
+              variants={pipelineCardVariants}
             >
               {i > 0 && (
                 <div className="hidden md:block w-full h-px bg-gradient-to-r from-transparent via-white/15 to-transparent -mt-3 mb-3" />
@@ -146,9 +173,9 @@ export default function WhatIsIt() {
                   {s.detail}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
