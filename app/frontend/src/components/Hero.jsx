@@ -2,12 +2,13 @@ import { PiStarFourBold } from "react-icons/pi";
 import { MdOutlineToggleOff } from "react-icons/md";
 import { MdToggleOn } from "react-icons/md";
 import { IoIosWifi } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Link } from "react-scroll";
 
 export default function Hero() {
+  const navigate = useNavigate();
   const heroRef = useRef(null);
   const titleRef = useRef(null);
   const btnRef = useRef(null);
@@ -55,13 +56,9 @@ export default function Hero() {
           Generative Protein Binding
         </h1>
 
-        <Link
+        <button
           ref={btnRef}
-          to="upload"
-          smooth
-          spy={false}
-          duration={700}
-          offset={-24}
+          onClick={() => navigate("/dashboard")}
           className="hero-cta group hover:cursor-pointer relative inline-flex items-center gap-4 overflow-visible rounded-2xl bg-[#196eff] px-10 py-5 font-semibold transition-all duration-300
                     shadow-[0_12px_30px_rgba(0,0,0,0.35)]
                     hover:scale-[1.04] hover:shadow-[0_18px_45px_rgba(0,0,0,0.45)]
@@ -82,7 +79,7 @@ export default function Hero() {
           <span className="relative text-lg text-white tracking-tight">
             Start Binding
           </span>
-        </Link>
+        </button>
       </div>
 
       <div

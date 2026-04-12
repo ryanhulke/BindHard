@@ -3,9 +3,7 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import WhatIsIt from './components/WhatIsIt'
 import FAQ from './components/FAQ'
-import Upload from './pages/Upload'
 import PageLoadProgress from './components/PageLoadProgress'
-import { Element } from 'react-scroll'
 
 const TOTAL_FRAMES = 207
 // Tweak this — 0.4 means full animation plays in first 40% of scroll
@@ -110,13 +108,6 @@ function App() {
 
       {/* What Is It */}
       <WhatIsIt />
-
-      {/* Upload */}
-      <Element name="upload" className="relative z-10">
-        <section id="upload">
-          <Upload />
-        </section>
-      </Element>
 
       {/* FAQ */}
       <FAQ />
