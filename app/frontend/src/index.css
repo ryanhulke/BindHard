@@ -136,3 +136,18 @@ body {
   transform-origin: center;
   animation: cta-sonar-ping 2.6s ease-out infinite;
 }
+
+@keyframes protein-background-breathe {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.04);
+  }
+}
+
+.protein-background-breathe {
+  animation: protein-background-breathe 8s ease-in-out infinite alternate;
+  transform-origin: center;
+  will-change: transform;
+}
