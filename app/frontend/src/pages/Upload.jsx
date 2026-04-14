@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { AlertCircle, Check, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { uploadTarget } from '../lib/trajectoryApi'
@@ -11,12 +11,7 @@ const LOADING_STEPS = [
   'Running flow match…',
   'Finalizing candidates…',
 ]
-const PIPELINE_STEPS = [
-  { label: 'Upload', status: 'active' },
-  { label: 'Configure', status: 'future' },
-  { label: 'Generate', status: 'future' },
-  { label: 'Results', status: 'future' },
-]
+const MotionDiv = motion.div
 
 export default function Upload() {
   const [file, setFile] = useState(null)
@@ -42,72 +37,7 @@ export default function Upload() {
     : samplesPerTarget
   const currentLoadingStep = LOADING_STEPS[loadingStepIndex] ?? LOADING_STEPS[0]
 
-  useEffect(() => {
-    if (!loading) return undefined
-
-    const intervalId = window.setInterval(() => {
-      setLoadingStepIndex((current) => (current + 1) % LOADING_STEPS.length)
-    }, 1800)
-
-    return () => window.clearInterval(intervalId)
-  }, [loading])
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.metaKey && e.key === 'Enter') {
-        e.preventDefault()
-        runModel()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [file, isBusy, resolvedSamplesPerTarget])
-
-  const parsePdbMetadata = (pdbText) => {
-    const chains = new Set()
-    let atomCount = 0
-    let hetatmCount = 0
-
-    for (const line of pdbText.split('\n')) {
-      if (line.startsWith('ATOM')) {
-        atomCount += 1
-        const chainId = line[21]?.trim()
-        if (chainId) chains.add(chainId)
-      }
-
-      if (line.startsWith('HETATM')) {
-        hetatmCount += 1
-      }
-    }
-
-    return {
-      residueCount: atomCount,
-      chainCount: chains.size,
-      ligandCount: hetatmCount,
-    }
-  }
-
-  const handleFile = async (nextFile) => {
-    if (!nextFile) return
-    const pdbText = await nextFile.text()
-    setFile(nextFile)
-    setPdbMetadata(parsePdbMetadata(pdbText))
-    setLoading(false)
-    setLoadingStepIndex(0)
-    setErrorMessage('')
-    setErrorShakeKey(0)
-    setStatusMessage('')
-  }
-
-  const handleDrop = async (event) => {
-    event.preventDefault()
-    setDragging(false)
-    if (isBusy) return
-    await handleFile(event.dataTransfer.files[0])
-  }
-
-  const runModel = async () => {
+  const runModel = useCallback(async () => {
     if (!file || isBusy) return
 
     setErrorMessage('')
@@ -141,6 +71,61 @@ export default function Upload() {
       setErrorMessage(String(error?.message || error))
       setErrorShakeKey((current) => current + 1)
     }
+  }, [file, isBusy, navigate, resolvedSamplesPerTarget])
+
+  useEffect(() => {
+    if (!loading) return undefined
+
+    const intervalId = window.setInterval(() => {
+      setLoadingStepIndex((current) => (current + 1) % LOADING_STEPS.length)
+    }, 1800)
+
+    return () => window.clearInterval(intervalId)
+  }, [loading])
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.metaKey && e.key === 'Enter') {
+        e.preventDefault()
+        runModel()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [runModel])
+
+  const parsePdbMetadata = (pdbText) => {
+    let atomCount = 0
+
+    for (const line of pdbText.split('\n')) {
+      if (line.startsWith('ATOM')) {
+        atomCount += 1
+      }
+    }
+
+    return {
+      atomCount,
+    }
+  }
+
+  const handleFile = async (nextFile) => {
+    if (!nextFile) return
+    const pdbText = await nextFile.text()
+    setFile(nextFile)
+    setPdbMetadata(parsePdbMetadata(pdbText))
+    setLoading(false)
+    setLoadingStepIndex(0)
+    setErrorMessage('')
+    setErrorShakeKey(0)
+    setStatusMessage('')
+  }
+
+  const handleDrop = async (event) => {
+    event.preventDefault()
+    setDragging(false)
+    if (isBusy) return
+    await handleFile(event.dataTransfer.files[0])
   }
 
   return (
@@ -153,44 +138,13 @@ export default function Upload() {
       }}
     >
       <div className="w-full max-w-lg px-6">
-        <div className="mb-8 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-          {PIPELINE_STEPS.map((step) => (
-            <div key={step.label} className="flex min-w-0 flex-1 items-center gap-2">
-              <div
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
-                  step.status === 'completed'
-                    ? 'border-teal-400/70 bg-teal-400/15 text-teal-300'
-                    : step.status === 'active'
-                      ? 'border-teal-400/70 bg-teal-400 text-[#080a0f]'
-                      : 'border-white/20 bg-transparent text-white/30'
-                }`}
-              >
-                {step.status === 'completed' ? (
-                  <Check className="h-3.5 w-3.5" />
-                ) : step.status === 'active' ? (
-                  <span className="h-2.5 w-2.5 rounded-full bg-current" />
-                ) : (
-                  <span className="h-2.5 w-2.5 rounded-full border border-current" />
-                )}
-              </div>
-              <span
-                className={`truncate text-[11px] font-semibold uppercase tracking-[0.2em] ${
-                  step.status === 'active' ? 'text-teal-300' : 'text-white/35'
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-          ))}
-        </div>
-
         <div className="text-center mb-10">
           <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase mb-3">Bind Hard</p>
           <h1 className="text-white text-4xl font-bold tracking-tight">Upload Target</h1>
           <p className="text-white/40 text-sm mt-2">PDB file + sample count</p>
         </div>
 
-        <motion.div
+        <MotionDiv
           onClick={() => !isBusy && inputRef.current?.click()}
           onDragEnter={(event) => {
             event.preventDefault()
@@ -230,13 +184,7 @@ export default function Upload() {
               {pdbMetadata && (
                 <div className="flex flex-wrap justify-center gap-2">
                   <span className="rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-teal-100">
-                    ATOM {pdbMetadata.residueCount}
-                  </span>
-                  <span className="rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-teal-100">
-                    Chains {pdbMetadata.chainCount}
-                  </span>
-                  <span className="rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-teal-100">
-                    HETATM {pdbMetadata.ligandCount}
+                    ATOM {pdbMetadata.atomCount}
                   </span>
                 </div>
               )}
@@ -250,7 +198,7 @@ export default function Upload() {
               <p className="text-white/30 text-xs">or click to browse</p>
             </>
           )}
-        </motion.div>
+        </MotionDiv>
 
         <div className="mt-6 grid grid-cols-1 gap-4">
           <label className="block">
@@ -335,7 +283,7 @@ export default function Upload() {
         )}
 
         {errorMessage && (
-          <motion.div
+          <MotionDiv
             key={errorShakeKey}
             className="mt-4 rounded-2xl border border-red-400/30 bg-red-950/30 p-4"
             animate={{ x: [0, -8, 8, -8, 0] }}
@@ -358,7 +306,7 @@ export default function Upload() {
                 Retry
               </button>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </div>
     </div>
