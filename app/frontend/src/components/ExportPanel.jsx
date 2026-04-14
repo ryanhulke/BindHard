@@ -17,17 +17,14 @@ export default function ExportPanel({samples, selected, onSelectAll, onDeselectA
   }, [samples])
 
   const filtered = useMemo(() => samples.filter((s) => {
-    if (filters.validOnly && s.status !== 'completed') return false
     if (filters.affinityMin != null && Number.isFinite(s.vina_score) && s.vina_score < filters.affinityMin) return false
     if (filters.affinityMax != null && Number.isFinite(s.vina_score) && s.vina_score > filters.affinityMax) return false
-    if (filters.minAtoms != null && Number.isFinite(s.n_atoms) && s.n_atoms < filters.minAtoms) return false
     if (filters.hasSmilesOnly && !s.smiles) return false
     return true
   }), [samples, filters])
 
   const selectedFiltered = filtered.filter((s) => selected.has(Number(s.sample_idx)))
   const allSelected = filtered.length > 0 && filtered.every((s) => selected.has(Number(s.sample_idx)))
-  const validFiltered = filtered.filter((s) => s.status === 'completed')
 
   const doExport = (rows, name) => {
     if (rows.length === 0) {
@@ -63,18 +60,7 @@ export default function ExportPanel({samples, selected, onSelectAll, onDeselectA
             </div>
           </div>
 
-          <div>
-            <label className="mb-0.5 block text-[10px] text-white/35">Min atoms</label>
-            <input type="number" min="0" value={filters.minAtoms ?? ''} placeholder="Any"
-              onChange={(e) => setFilter({ minAtoms: numOrNull(e.target.value) })} className={INPUT_CLS} />
-          </div>
-
           <div className="flex items-center gap-3 pt-1">
-            <label className="flex items-center gap-1.5 text-[10px] text-white/50 cursor-pointer">
-              <input type="checkbox" checked={filters.validOnly ?? true}
-                onChange={(e) => setFilter({ validOnly: e.target.checked })} className="accent-blue-500" />
-              Valid only
-            </label>
             <label className="flex items-center gap-1.5 text-[10px] text-white/50 cursor-pointer">
               <input type="checkbox" checked={filters.hasSmilesOnly ?? false}
                 onChange={(e) => setFilter({ hasSmilesOnly: e.target.checked })} className="accent-blue-500" />
@@ -107,14 +93,14 @@ export default function ExportPanel({samples, selected, onSelectAll, onDeselectA
       <div className={SECTION_CLS} style={SECTION_BG}>
         <span className={`${LABEL_CLS} mb-2`}>Export SDF</span>
         <div className="space-y-2">
-          <button type="button" onClick={() => doExport(validFiltered, 'all')}
-            disabled={validFiltered.length === 0}
+          <button type="button" onClick={() => doExport(filtered, 'all')}
+            disabled={filtered.length === 0}
             className="w-full rounded-lg py-2 text-xs font-bold text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: validFiltered.length > 0 ? '#196eff' : 'rgba(255,255,255,0.08)',
-              boxShadow: validFiltered.length > 0 ? '0 4px 16px rgba(25,110,255,0.25)' : 'none',
+              background: filtered.length > 0 ? '#196eff' : 'rgba(255,255,255,0.08)',
+              boxShadow: filtered.length > 0 ? '0 4px 16px rgba(25,110,255,0.25)' : 'none',
             }}>
-            Save All Molecules ({validFiltered.length})
+            Save All Molecules ({filtered.length})
           </button>
 
           <button type="button" onClick={() => doExport(selectedFiltered, 'selected')}

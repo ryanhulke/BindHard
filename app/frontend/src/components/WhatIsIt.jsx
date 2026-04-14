@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView } from "framer-motion";
 import FlowMatching from "../FlowMatching";
 
+const MotionDiv = motion.div;
+
 // const FEATURES = [
 //   {
 //     title: "Emotion Measurement",
@@ -152,7 +154,7 @@ export default function WhatIsIt() {
         <h3 className="text-white font-bold text-lg mb-4 tracking-tight text-center">
           How it works
         </h3>
-        <motion.div
+        <MotionDiv
           className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-0"
           variants={pipelineContainerVariants}
           initial="hidden"
@@ -185,7 +187,7 @@ export default function WhatIsIt() {
                 "Explore the predicted complex in an interactive interface for faster inspection",
             },
           ].map((s, i) => (
-            <motion.div
+            <MotionDiv
               key={s.step}
               className="flex-1 flex items-start gap-3 md:flex-col md:items-center md:text-center"
               variants={pipelineCardVariants}
@@ -200,9 +202,9 @@ export default function WhatIsIt() {
                   {s.detail}
                 </p>
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
-        </motion.div>
+        </MotionDiv>
 
         <div className="mt-12">
           <FlowMatching />

@@ -7,6 +7,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const MotionDiv = motion.div;
+
 export default function Hero() {
   const navigate = useNavigate();
   const heroRef = useRef(null);
@@ -86,7 +88,7 @@ export default function Hero() {
         ref={windowRef}
         className="max-w-6xl w-full h-[750px] rounded-[14px] shadow-[0_0px_40px_20px_rgba(255,255,255,0.3)] relative overflow-hidden"
       >
-        <motion.div
+        <MotionDiv
           className="absolute -inset-y-16 inset-x-0"
           style={{
             y: proteinBackgroundY,
@@ -100,7 +102,7 @@ export default function Hero() {
               backgroundPosition: "center",
             }}
           />
-        </motion.div>
+        </MotionDiv>
 
         {/* Top Bar */}
         <div className="absolute opacity-50 top-0 left-0 w-full h-9 bg-black/80 backdrop-blur-md flex items-center justify-between pl-4 pr-1">

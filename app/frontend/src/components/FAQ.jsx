@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
+const MotionDiv = motion.div;
+const MotionSpan = motion.span;
+const MotionP = motion.p;
+
 const FAQ_DATA = [
   {
     q: "What input data does Bind Hard need?",
@@ -26,7 +30,7 @@ const FAQ_DATA = [
 
 function FaqItem({ q, a, index, isOpen, onToggle }) {
   return (
-    <motion.div
+    <MotionDiv
       className="border-b border-white/8 transition-all duration-700"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -41,17 +45,17 @@ function FaqItem({ q, a, index, isOpen, onToggle }) {
         <span className="text-white font-semibold text-base md:text-lg pr-8 group-hover:text-white transition-colors">
           {q}
         </span>
-        <motion.span
+        <MotionSpan
           className="text-white text-2xl shrink-0"
           animate={{ rotate: isOpen ? 45 : 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
           +
-        </motion.span>
+        </MotionSpan>
       </button>
       <AnimatePresence initial={false}>
         {isOpen ? (
-          <motion.div
+          <MotionDiv
             key="content"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -62,7 +66,7 @@ function FaqItem({ q, a, index, isOpen, onToggle }) {
             }}
             className="overflow-hidden"
           >
-            <motion.p
+            <MotionP
               initial={{ y: -6 }}
               animate={{ y: 0 }}
               exit={{ y: -4 }}
@@ -70,11 +74,11 @@ function FaqItem({ q, a, index, isOpen, onToggle }) {
               className="text-white text-sm leading-relaxed pb-6 pr-12"
             >
               {a}
-            </motion.p>
-          </motion.div>
+            </MotionP>
+          </MotionDiv>
         ) : null}
       </AnimatePresence>
-    </motion.div>
+    </MotionDiv>
   );
 }
 

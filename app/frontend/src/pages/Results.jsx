@@ -57,7 +57,9 @@ export default function Results() {
 
   const [selectedForExport, setSelectedForExport] = useState(new Set())
   const [exportFilters, setExportFilters] = useState({
-    validOnly: true, hasSmilesOnly: false, affinityMin: null, affinityMax: null, minAtoms: null,
+    hasSmilesOnly: false,
+    affinityMin: null,
+    affinityMax: null,
   })
 
   const toggleExportSelect = useCallback((idx) => {
@@ -257,9 +259,9 @@ export default function Results() {
 
   return (
     <div className="h-[calc(100vh-3.5rem)] overflow-hidden px-5 py-6" style={{ background: '#080a0f' }}>
-      <div className="mx-auto flex h-full w-full max-w-[1560px] gap-5">
+      <div className="mx-auto flex h-full w-full max-w-[1660px] gap-5">
         <aside
-          className="w-[360px] shrink-0 overflow-y-auto rounded-2xl border border-white/10 p-4"
+          className="w-[400px] max-w-[40vw] shrink-0 overflow-y-auto rounded-2xl border border-white/10 p-4"
           style={{ background: 'rgba(255,255,255,0.025)' }}
         >
           <h1 className="text-xl font-semibold tracking-tight text-white">Results</h1>
@@ -452,14 +454,8 @@ export default function Results() {
           </button>
         </aside>
 
-        <section className="min-w-0 flex-1">
-          <div className="mb-2 flex items-center justify-end">
-            <p className="text-xs text-white/45">
-              sample: <span className="text-white/70">{sampleLabel}</span>
-            </p>
-          </div>
-
-          <div className="h-[calc(100%-1.4rem)]">
+        <section className="flex min-w-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1">
             {selectedSample ? (
               isMetricsMode ? (
                 <MetricsPanel entry={selectedSample} />

@@ -61,7 +61,9 @@ export async function uploadTarget(file, options = {}) {
       const payload = await response.json()
       if (payload?.error) details = ` (${payload.error})`
       else if (payload?.detail) details = ` (${payload.detail})`
-    } catch {}
+    } catch {
+      details = ''
+    }
     throw new Error(
       `Failed to upload target '${file?.name ?? 'unknown'}': ` +
       `${response.status} ${response.statusText}${details}`,
@@ -91,7 +93,9 @@ export async function fetchJob(jobId) {
     try {
       const payload = await response.json()
       if (payload?.error) details = ` (${payload.error})`
-    } catch {}
+    } catch {
+      details = ''
+    }
     throw new Error(
       `Failed to fetch job '${jobId}': ${response.status} ${response.statusText}${details}`,
     )
@@ -117,7 +121,9 @@ export async function fetchSamples(jobId) {
     try {
       const payload = await response.json()
       if (payload?.error) details = ` (${payload.error})`
-    } catch {}
+    } catch {
+      details = ''
+    }
     throw new Error(
       `Failed to fetch samples for job '${jobId}': ${response.status} ${response.statusText}${details}`,
     )
