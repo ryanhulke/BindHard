@@ -15,4 +15,4 @@ export XDG_RUNTIME_DIR=${SLURM_TMPDIR}
 module load conda
 conda activate bindhard
 
-python train.py
+python -m scripts.train_generator

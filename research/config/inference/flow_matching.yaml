@@ -10,6 +10,13 @@ message_passing_mode: "attention" # mlp, attention
 hidden_dim: 128
 num_layers: 9
 norm: true
+max_ligand_atoms: 64
 steps: 100
+
+guidance_ckpt: null
+guidance_target: "vina_score"
+guidance_lower_is_better: true
+guidance_scale: 0.0
+guidance_clip: 10.0
 
 ckpt: "checkpoints/wgwnxpac/graphAttn_flow_matching_best.pt"

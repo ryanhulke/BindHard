@@ -17,4 +17,4 @@ export XDG_RUNTIME_DIR=${SLURM_TMPDIR}
 module load conda
 conda activate bindhard
 
-python test_set_inference.py
+python -m scripts.test_set_inference

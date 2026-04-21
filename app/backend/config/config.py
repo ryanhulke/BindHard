@@ -17,9 +17,15 @@ class InferenceConfig:
     norm: bool = True
 
     num_types: int = 7
+    max_ligand_atoms: int = 64
     steps: int = 1000
     type_loss_scale: float = 100.0
     protein_noise_std: float = 0.1
+    guidance_ckpt: str | None = None
+    guidance_target: str = "vina_score"
+    guidance_lower_is_better: bool = True
+    guidance_scale: float = 0.0
+    guidance_clip: float = 10.0
 
     batch_size: int = 8
     num_workers: int = 0
